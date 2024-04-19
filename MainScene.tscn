@@ -9,7 +9,6 @@ script = ExtResource("1_jlnit")
 [node name="Maze" parent="." instance=ExtResource("2_d6yoh")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-follow_viewport_enabled = true
 
 [node name="UI" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -19,10 +18,10 @@ offset_bottom = 40.0
 
 [node name="GenerateMazeButton" type="Button" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 1543.0
-offset_top = -389.0
-offset_right = 2008.0
-offset_bottom = -170.0
+offset_left = 238.0
+offset_top = 23.0
+offset_right = 417.0
+offset_bottom = 54.0
 text = "Generate Maze
 "
 

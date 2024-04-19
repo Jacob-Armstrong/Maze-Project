@@ -15,8 +15,8 @@ func _process(delta):
 func _on_generate_maze_button_pressed():
 	mazeButton.disabled = true
 	var newMaze = maze.instantiate()
-	var oldMaze = maze.get_children()
-	for child in oldMaze:
+	var mazeNodes = $Maze.get_children()
+	for child in mazeNodes:
 		if child is TileMap:
 			child.queue_free()
 	add_child(newMaze)
