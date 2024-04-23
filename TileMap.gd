@@ -6,9 +6,13 @@ const LAYER = 0
 const SOURCE = 0
 const PATH_ATLAS_COORDS = Vector2i(0, 0)
 const WALL_ATLAS_COORDS = Vector2i(1, 0)
+const SOLVED_ATLAS_COORDS = Vector2i(2, 0)
 
 @export var y_size = 30
 @export var x_size = 30
+
+var path
+var pathFound = false
 
 var adjacent = [
 	Vector2i(-1, 0), # Left
@@ -49,14 +53,13 @@ func generate_maze():
 		var move = frontier.pop_back()
 		explored[move] = true
 		
-		#if move in explored or not isValidMove(move):
-			#await get_tree().create_timer(Globals.delay).timeout
+		if move in explored or not isValidMove(move):
+			if Globals.isDelay:
+				await get_tree().create_timer(Globals.delay).timeout
 		
 		# Create walls in grid pattern while exploring
 		if isWallCoord(move):
 			create_wall(move)
-		
-		#await get_tree().create_timer(Globals.delay).timeout
 		
 		var valid_path = false
 		adjacent.shuffle()
@@ -85,3 +88,34 @@ func create_global_border():
 		create_wall(Vector2i(x, -1))
 	for x in range(-1, x_size + 1): # Bottom Border
 		create_wall(Vector2i(x, y_size))
+
+func place_solved_path(coords):
+	set_cell(LAYER, coords, SOURCE, SOLVED_ATLAS_COORDS)
+
+func generate_astar_grid():
+	
+	if pathFound:
+		for coord in path:
+			create_path(coord)
+	
+	var astargrid = AStarGrid2D.new()
+	astargrid.region = get_used_rect()
+	astargrid.cell_size = Vector2i(64, 64)
+	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astargrid.update()
+	
+	var tiles = get_used_cells(LAYER)
+	print("TILES: " + str(tiles))
+	
+	for tile in tiles:
+		if is_wall(tile):
+			print("wall inserted at : " + str(tile))
+			astargrid.set_point_solid(tile)
+	
+	path = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
+	
+	for coord in path:
+		place_solved_path(coord)
+		await get_tree().create_timer(Globals.delay).timeout
+	
+	pathFound = true

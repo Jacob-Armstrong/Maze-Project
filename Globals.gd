@@ -1,9 +1,10 @@
 extends Node
 
-var grid_size_x = 15
-var grid_size_y = 15
+var grid_size_x = 33
+var grid_size_y = 33
 
-var delay = 0.000
+var isDelay = false
+var delay = 0.001
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

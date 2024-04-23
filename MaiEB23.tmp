@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://c2ag7c45jmv1r"]
+
+[ext_resource type="Script" path="res://MainScene.gd" id="1_jlnit"]
+[ext_resource type="PackedScene" uid="uid://d3ruf8konoqhn" path="res://Maze.tscn" id="2_d6yoh"]
+[ext_resource type="Script" path="res://Camera2D.gd" id="3_hsjw3"]
+
+[node name="MainScene" type="Node2D"]
+script = ExtResource("1_jlnit")
+
+[node name="Maze" parent="." instance=ExtResource("2_d6yoh")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="GenerateMazeButton" type="Button" parent="CanvasLayer/UI"]
+layout_mode = 0
+offset_left = 238.0
+offset_top = 23.0
+offset_right = 417.0
+offset_bottom = 54.0
+text = "Generate Maze
+"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(323, 321)
+script = ExtResource("3_hsjw3")
+
+[connection signal="pressed" from="CanvasLayer/UI/GenerateMazeButton" to="." method="_on_generate_maze_button_pressed"]

@@ -1,5 +1,9 @@
+CheckButton
+TileMap
+Node2D
+Label
+HSlider
 CanvasLayer
 Camera2D
-TileMap
 Button
 Control

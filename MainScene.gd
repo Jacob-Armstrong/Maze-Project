@@ -1,11 +1,15 @@
 extends Node2D
 
+var num = 0
+
+var currentMaze
+
 const maze = preload("res://Maze.tscn")
 @onready var mazeButton = $CanvasLayer/UI/GenerateMazeButton
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -15,9 +19,26 @@ func _process(delta):
 func _on_generate_maze_button_pressed():
 	mazeButton.disabled = true
 	var newMaze = maze.instantiate()
-	var mazeNodes = $Maze.get_children()
-	for child in mazeNodes:
-		if child is TileMap:
+	var children = get_children()
+	for child in children:
+		if child is Node2D and not child is Camera2D:
 			child.queue_free()
+	
+	currentMaze = newMaze
 	add_child(newMaze)
 	mazeButton.disabled = false
+
+
+
+func _on_h_slider_value_changed(value):
+	Globals.grid_size_x = value
+	Globals.grid_size_y = value
+	$CanvasLayer/UI/SliderLabel.text = str(value)
+
+
+func _on_solve_button_pressed():
+	currentMaze.get_node("TileMap").generate_astar_grid()
+
+
+func _on_check_button_toggled(toggled_on):
+	Globals.isDelay = toggled_on
