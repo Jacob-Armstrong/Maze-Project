@@ -12,11 +12,17 @@ func adjust_camera():
 	
 	var maze = maze_parent.get_node("TileMap")
 	var tile_size = 64
-	var maze_size = Vector2(maze.x_size + 10, maze.y_size + 10) * tile_size
+	var maze_size = Vector2(maze.x_size + 30, maze.y_size + 30) * tile_size
+	
+	if Globals.comparing:
+		maze_size *= 2
+	
 	self.zoom =  Vector2(self.get_viewport().size) / maze_size
-	#self.zoom -= Vector2(0.2, 0.2)
 	var center_cell = Vector2(maze.x_size, maze.y_size) / 2
-	center_cell.y -= 0
+	
+	if Globals.comparing:
+		center_cell.x *= 2
+	
 	self.global_position = maze.to_global(maze.map_to_local(center_cell))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

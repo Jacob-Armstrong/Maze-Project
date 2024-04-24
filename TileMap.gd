@@ -8,10 +8,11 @@ const PATH_ATLAS_COORDS = Vector2i(0, 0)
 const WALL_ATLAS_COORDS = Vector2i(1, 0)
 const SOLVED_ATLAS_COORDS = Vector2i(2, 0)
 
-@export var y_size = 30
 @export var x_size = 30
+@export var y_size = 30
 
 var path
+var isSecondMaze
 var pathFound = false
 
 var adjacent = [
@@ -25,8 +26,13 @@ func _ready():
 	y_size = Globals.grid_size_x
 	x_size = Globals.grid_size_y
 	
-	create_global_border()
-	generate_maze()
+	if not isSecondMaze:
+		create_global_border()
+		generate_maze()
+
+# ==================
+# | Maze Generator |
+# ==================
 
 # Add wall tile to specified coordinates
 func create_wall(coords: Vector2):
@@ -36,13 +42,20 @@ func create_wall(coords: Vector2):
 func create_path(coords: Vector2):
 	set_cell(LAYER, coords, SOURCE, PATH_ATLAS_COORDS)
 
-func is_wall(coords: Vector2): # Return true if tile is wall
+# Add red "solved" tile to specified coordinates
+func place_solved_path(coords):
+	set_cell(LAYER, coords, SOURCE, SOLVED_ATLAS_COORDS)
+
+# Return true if tile is wall
+func is_wall(coords: Vector2): 
 	return get_cell_atlas_coords(LAYER, coords) == WALL_ATLAS_COORDS
 
+# Return true if tile is even
 func isWallCoord(coords: Vector2i):
 	return (coords.x % 2 == 1 and coords.y % 2 == 1)
 
-func isValidMove(coords: Vector2): # Move is in bounds and not a wall
+# Move is in bounds and not a wall
+func isValidMove(coords: Vector2): 
 	return (coords.x >= 0 and coords.y >= 0 and coords.x < x_size and coords.y < y_size and not is_wall(coords))
 
 func generate_maze():
@@ -77,6 +90,9 @@ func generate_maze():
 			create_wall(move)
 		else:
 			create_path(move)
+	
+	# Generation done. Reenable buttons.
+	Globals.enableSolveButtons.emit()
 
 # Create border around maze
 func create_global_border():
@@ -89,10 +105,11 @@ func create_global_border():
 	for x in range(-1, x_size + 1): # Bottom Border
 		create_wall(Vector2i(x, y_size))
 
-func place_solved_path(coords):
-	set_cell(LAYER, coords, SOURCE, SOLVED_ATLAS_COORDS)
+# ===============
+# | Maze Solver |
+# ===============
 
-func generate_astar_grid():
+func solve_astar(heuristic):
 	
 	if pathFound:
 		for coord in path:
@@ -102,6 +119,7 @@ func generate_astar_grid():
 	astargrid.region = get_used_rect()
 	astargrid.cell_size = Vector2i(64, 64)
 	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astargrid.default_compute_heuristic = heuristic
 	astargrid.update()
 	
 	var tiles = get_used_cells(LAYER)
@@ -117,6 +135,7 @@ func generate_astar_grid():
 		await get_tree().create_timer(Globals.delay).timeout
 	
 	pathFound = true
+	Globals.enableSolveButtons.emit()
 
 func solve_bfs():
 	
@@ -150,3 +169,4 @@ func solve_bfs():
 				await get_tree().create_timer(Globals.delay).timeout
 	
 	pathFound = true
+	Globals.enableSolveButtons.emit()

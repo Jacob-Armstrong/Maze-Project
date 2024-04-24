@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://d3ruf8konoqhn"]
+[gd_scene load_steps=6 format=3 uid="uid://d3ruf8konoqhn"]
 
 [ext_resource type="Texture2D" uid="uid://drd87ndnwjfqw" path="res://assets/simple_maze_atlas.png" id="1_q3vnw"]
 [ext_resource type="Script" path="res://TileMap.gd" id="2_o55o2"]
@@ -14,9 +14,25 @@ texture_region_size = Vector2i(64, 64)
 tile_size = Vector2i(64, 64)
 sources/0 = SubResource("TileSetAtlasSource_ndtq4")
 
+[sub_resource type="LabelSettings" id="LabelSettings_u5b4c"]
+font_size = 50
+
 [node name="Maze" type="Node2D"]
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_5cdlm")
 format = 2
 script = ExtResource("2_o55o2")
+
+[node name="Label" type="Label" parent="TileMap"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 39.0
+offset_top = -116.0
+offset_right = 156.0
+offset_bottom = -47.0
+grow_vertical = 0
+text = "label"
+label_settings = SubResource("LabelSettings_u5b4c")
