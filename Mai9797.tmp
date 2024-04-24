@@ -74,22 +74,16 @@ offset_top = 5.0
 offset_right = 219.0
 offset_bottom = 36.0
 
-[node name="AlgorithmLabel" type="Label" parent="CanvasLayer/UI/ColorRect/HBoxContainer"]
-layout_mode = 2
-text = "Algorithm:"
-
 [node name="OptionButton" type="OptionButton" parent="CanvasLayer/UI/ColorRect/HBoxContainer"]
 layout_mode = 2
 focus_mode = 0
 disabled = true
-item_count = 3
+item_count = 2
 selected = 0
 popup/item_0/text = "A*"
 popup/item_0/id = 0
 popup/item_1/text = "BFS"
 popup/item_1/id = 1
-popup/item_2/text = "All"
-popup/item_2/id = 2
 
 [node name="SolveButton" type="Button" parent="CanvasLayer/UI/ColorRect/HBoxContainer"]
 layout_mode = 2
@@ -107,42 +101,21 @@ focus_mode = 0
 text = "Generate Maze
 "
 
-[node name="HeuristicLabel" type="Label" parent="CanvasLayer/UI"]
-visible = false
+[node name="BothButton" type="CheckButton" parent="CanvasLayer/UI"]
 layout_mode = 2
-offset_left = 417.0
-offset_top = 61.0
-offset_right = 499.0
-offset_bottom = 84.0
-text = "Heuristic:"
-
-[node name="HeuristicOptionButton" type="OptionButton" parent="CanvasLayer/UI"]
-visible = false
-layout_mode = 2
-offset_left = 503.0
-offset_top = 57.0
-offset_right = 576.0
-offset_bottom = 88.0
-focus_mode = 0
-disabled = true
-item_count = 4
-selected = 0
-popup/item_0/text = "Euclidian"
-popup/item_0/id = 0
-popup/item_1/text = "Manhattan"
-popup/item_1/id = 1
-popup/item_2/text = "Octile"
-popup/item_2/id = 2
-popup/item_3/text = "Chebyshev"
-popup/item_3/id = 3
+offset_left = 547.0
+offset_top = 17.0
+offset_right = 619.0
+offset_bottom = 48.0
+text = "Both:"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(323, 321)
 script = ExtResource("3_hsjw3")
 
+[connection signal="drag_ended" from="CanvasLayer/UI/ColorRect2/HSlider" to="." method="_on_h_slider_drag_ended"]
 [connection signal="value_changed" from="CanvasLayer/UI/ColorRect2/HSlider" to="." method="_on_h_slider_value_changed"]
 [connection signal="toggled" from="CanvasLayer/UI/ColorRect2/CheckButton" to="." method="_on_check_button_toggled"]
 [connection signal="item_selected" from="CanvasLayer/UI/ColorRect/HBoxContainer/OptionButton" to="." method="_on_option_button_item_selected"]
 [connection signal="pressed" from="CanvasLayer/UI/ColorRect/HBoxContainer/SolveButton" to="." method="_on_solve_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/UI/GenerateMazeButton" to="." method="_on_generate_maze_button_pressed"]
-[connection signal="item_selected" from="CanvasLayer/UI/HeuristicOptionButton" to="." method="_on_heuristic_option_button_item_selected"]

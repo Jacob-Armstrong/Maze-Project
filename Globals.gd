@@ -1,14 +1,19 @@
 extends Node
 
-var grid_size_x = 33
-var grid_size_y = 33
+var grid_size_x = 5
+var grid_size_y = 5
 
 var isDelay = false
 var delay = 0.001
 
+var comparing = false
+
+signal enableSolveButtons
+signal disableSolveButtons
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
