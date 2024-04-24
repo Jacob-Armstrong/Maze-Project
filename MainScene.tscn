@@ -51,18 +51,18 @@ offset_bottom = 53.0
 
 [node name="CheckButton" type="CheckButton" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 123.0
+offset_left = 89.0
 offset_top = 1.0
-offset_right = 219.0
+offset_right = 185.0
 offset_bottom = 32.0
 text = "Delay:"
 
 [node name="OptionButton" type="OptionButton" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 4.0
-offset_right = 89.0
-offset_bottom = 35.0
+offset_left = 8.0
+offset_top = 10.0
+offset_right = 81.0
+offset_bottom = 41.0
 item_count = 2
 popup/item_0/text = "A*"
 popup/item_0/id = 0

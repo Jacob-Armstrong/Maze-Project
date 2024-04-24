@@ -105,11 +105,9 @@ func generate_astar_grid():
 	astargrid.update()
 	
 	var tiles = get_used_cells(LAYER)
-	print("TILES: " + str(tiles))
 	
 	for tile in tiles:
 		if is_wall(tile):
-			print("wall inserted at : " + str(tile))
 			astargrid.set_point_solid(tile)
 	
 	path = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
