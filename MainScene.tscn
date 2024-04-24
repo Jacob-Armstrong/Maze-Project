@@ -44,18 +44,30 @@ value = 7.0
 
 [node name="SliderLabel" type="Label" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 108.0
-offset_top = 11.0
-offset_right = 148.0
-offset_bottom = 34.0
+offset_left = 168.0
+offset_top = 30.0
+offset_right = 208.0
+offset_bottom = 53.0
 
 [node name="CheckButton" type="CheckButton" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 78.0
+offset_left = 123.0
 offset_top = 1.0
-offset_right = 174.0
+offset_right = 219.0
 offset_bottom = 32.0
 text = "Delay:"
+
+[node name="OptionButton" type="OptionButton" parent="CanvasLayer/UI"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 4.0
+offset_right = 89.0
+offset_bottom = 35.0
+item_count = 2
+popup/item_0/text = "A*"
+popup/item_0/id = 0
+popup/item_1/text = "BFS"
+popup/item_1/id = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(323, 321)
@@ -66,3 +78,4 @@ script = ExtResource("3_hsjw3")
 [connection signal="drag_ended" from="CanvasLayer/UI/HSlider" to="." method="_on_h_slider_drag_ended"]
 [connection signal="value_changed" from="CanvasLayer/UI/HSlider" to="." method="_on_h_slider_value_changed"]
 [connection signal="toggled" from="CanvasLayer/UI/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="item_selected" from="CanvasLayer/UI/OptionButton" to="." method="_on_option_button_item_selected"]

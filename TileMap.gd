@@ -119,3 +119,36 @@ func generate_astar_grid():
 		await get_tree().create_timer(Globals.delay).timeout
 	
 	pathFound = true
+
+func solve_bfs():
+	
+	if pathFound:
+		for coord in path:
+			create_path(coord)
+
+	path = []
+	
+	var frontier: Array[Vector2i] = [start_coords]
+	var explored = []
+
+	
+	var solved = false
+	
+	while frontier.size() > 0 or not solved:
+		var move = frontier.pop_back()
+		
+		if move == Vector2i(x_size-1, y_size-1):
+			solved = true
+			break
+		
+		for side in adjacent:
+			var possible_move = move + side
+			
+			if possible_move not in explored and isValidMove(possible_move):
+				frontier.append(possible_move)
+				explored.append(possible_move)
+				path.append(possible_move)
+				place_solved_path(possible_move)
+				await get_tree().create_timer(Globals.delay).timeout
+	
+	pathFound = true

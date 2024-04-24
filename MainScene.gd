@@ -4,6 +4,9 @@ var num = 0
 
 var currentMaze
 
+@onready var optionsButton = $CanvasLayer/UI/OptionButton
+var solveMethod
+
 const maze = preload("res://Maze.tscn")
 @onready var mazeButton = $CanvasLayer/UI/GenerateMazeButton
 
@@ -37,8 +40,19 @@ func _on_h_slider_value_changed(value):
 
 
 func _on_solve_button_pressed():
-	currentMaze.get_node("TileMap").generate_astar_grid()
+	match solveMethod:
+		0:
+			currentMaze.get_node("TileMap").generate_astar_grid()
+		1:
+			currentMaze.get_node("TileMap").solve_bfs()
+	
+	#currentMaze.get_node("TileMap").generate_astar_grid()
+	#currentMaze.get_node("TileMap").solve_bfs()
 
 
 func _on_check_button_toggled(toggled_on):
 	Globals.isDelay = toggled_on
+
+
+func _on_option_button_item_selected(index):
+	solveMethod = index
