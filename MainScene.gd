@@ -83,6 +83,7 @@ func _on_solve_button_pressed():
 			solveType = "BFS"
 		2: # Compare both algorithms
 			Globals.comparing = true
+			solveType = "A*"
 			currentMaze.get_node("TileMap").solve_astar(heuristic)
 			secondMaze.get_node("TileMap").solve_bfs()
 
@@ -109,6 +110,7 @@ func _on_check_button_toggled(toggled_on):
 
 func _on_option_button_item_selected(index):
 	solveMethod = index
+	hide_timers()
 	
 	# Algorithm dropdown selection
 	match solveMethod:
@@ -129,6 +131,7 @@ func _on_option_button_item_selected(index):
 			# Duplicate current maze, tell it not to generate, and add to tree
 			secondMaze = currentMaze.duplicate()
 			secondMaze.get_node("TileMap").isSecondMaze = true
+			secondMaze.get_node("TileMap").path = currentMaze.get_node("TileMap").path # Duplicate() is broken >:(
 			add_child(secondMaze)
 			
 			# Reposition second maze to the right
@@ -161,13 +164,16 @@ func _on_heuristic_option_button_item_selected(index):
 # +--------------------------+
 
 func current_solved_timer(time):
-	mainTimer.text = solveType + " Solve Time: " + str(time)
+	mainTimer.text = solveType + " Solve Time: " + str("%.1f" % time) + "s"
 	mainTimer.visible = true
 
 func second_solved_timer(time):
-	secondTimer.text = "BFS Solve Time: " + str(time)
+	secondTimer.text = "BFS Solve Time: " + str("%.1f" % time) + "s"
 	secondTimer.visible = true
 
 func hide_timers():
 	mainTimer.visible = false
 	secondTimer.visible = false
+
+func formatTime(time):
+	pass

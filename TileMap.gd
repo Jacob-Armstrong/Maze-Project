@@ -35,6 +35,9 @@ func _ready():
 	if not isSecondMaze:
 		create_global_border()
 		generate_maze()
+	else:
+		print("secondMaze spawned. path: " + str(path))
+		resetMaze()
 
 func _process(delta):
 	if solving:
