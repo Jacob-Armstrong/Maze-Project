@@ -115,6 +115,8 @@ func solve_astar(heuristic):
 		for coord in path:
 			create_path(coord)
 	
+	path = []
+	
 	var astargrid = AStarGrid2D.new()
 	astargrid.region = get_used_rect()
 	astargrid.cell_size = Vector2i(64, 64)

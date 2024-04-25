@@ -1,18 +1,26 @@
 extends Node2D
 
+# Maze scene and button references
 const maze = preload("res://Maze.tscn")
 @onready var mazeButton = $CanvasLayer/UI/GenerateMazeButton
 
-# Solver Buttons
+# Solve button references
 @onready var solveButton = $CanvasLayer/UI/ColorRect/HBoxContainer/SolveButton
 @onready var optionsButton = $CanvasLayer/UI/ColorRect/HBoxContainer/OptionButton
 @onready var heuristicsLabel = $CanvasLayer/UI/HeuristicLabel
 @onready var heuristicsOptionsButton = $CanvasLayer/UI/HeuristicOptionButton
 
+# Maze references
 var currentMaze
 var secondMaze
+
+# Default values
 var solveMethod = 0
 var heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+
+# +------------------------+
+# | Godot Script Functions |
+# +------------------------+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -23,23 +31,27 @@ func _ready():
 func _process(_delta):
 	pass
 
+# +-----------------------+
+# | UI Signal Connections |
+# +-----------------------+
+
 func _on_generate_maze_button_pressed():
 	
+	# Reset button/camera states
 	optionsButton.selected = 0
+	solveMethod = 0
+	Globals.comparing = false
+	disable_solve_buttons()
 	#show_heuristics()
 	
-	Globals.comparing = false
-	
-	mazeButton.disabled = true
-	solveButton.disabled = true
-	optionsButton.disabled = true
-	
+	# Create a new maze and remove all others
 	var newMaze = maze.instantiate()
 	var children = get_children()
 	for child in children:
 		if child is Node2D and not child is Camera2D:
 			child.queue_free()
 	
+	# Point reference to maze, add maze to tree
 	currentMaze = newMaze
 	add_child(newMaze)
 	mazeButton.disabled = false
@@ -52,19 +64,16 @@ func _on_h_slider_value_changed(value):
 func _on_solve_button_pressed():
 	disable_solve_buttons()
 	
-	if solveMethod == 2:
-		
-		Globals.comparing = true
-		currentMaze.get_node("TileMap").solve_astar(heuristic)
-		secondMaze.get_node("TileMap").solve_bfs()
-
-	else:
-		Globals.comparing = false
-		match solveMethod:
-			0:
-				currentMaze.get_node("TileMap").solve_astar(heuristic)
-			1:
-				currentMaze.get_node("TileMap").solve_bfs()
+	# Algorithm dropdown selection
+	match solveMethod:
+		0: # Astar
+			currentMaze.get_node("TileMap").solve_astar(heuristic)
+		1: # Breadth First Search
+			currentMaze.get_node("TileMap").solve_bfs()
+		2: # Compare both algorithms
+			Globals.comparing = true
+			currentMaze.get_node("TileMap").solve_astar(heuristic)
+			secondMaze.get_node("TileMap").solve_bfs()
 
 func enable_solve_buttons():
 	solveButton.disabled = false
@@ -90,49 +99,40 @@ func _on_check_button_toggled(toggled_on):
 func _on_option_button_item_selected(index):
 	solveMethod = index
 	
-	if index == 2:
+	# Algorithm dropdown selection
+	match solveMethod:
+		0, 1: # Astar or Breadth First Search
+			
+			# Hide labels, only using one algorithm
+			currentMaze.get_node("TileMap").get_node("Label").visible = false
+			#if solveMethod == 0:
+				#show_heuristics()
+			Globals.comparing = false
+			if is_instance_valid(secondMaze):
+				secondMaze.queue_free()
 		
-		#show_heuristics()
-		Globals.comparing = true
-		
-		secondMaze = currentMaze.duplicate()
-		secondMaze.get_node("TileMap").isSecondMaze = true
-		add_child(secondMaze)
-		
-		var currentTilemap = currentMaze.get_node("TileMap")
-		var secondTilemap = secondMaze.get_node("TileMap")
-		var tiles = currentTilemap.get_used_cells(0)
-		secondTilemap.clear()
-		
-		for tile in tiles:
-			if currentTilemap.is_wall(tile):
-				secondTilemap.create_wall(tile)
-			else:
-				secondTilemap.create_path(tile)
-		
-		secondMaze.position += Vector2((currentMaze.get_node("TileMap").x_size+5)*64, 0)
-		
-		var firstLabel = currentMaze.get_node("TileMap").get_node("Label")
-		firstLabel.text = "A*"
-		firstLabel.label_settings.font_size = Globals.grid_size_x * 20
-		firstLabel.visible = true
-		
-		var secondLabel = secondMaze.get_node("TileMap").get_node("Label")
-		secondLabel.text = "BFS"
-		secondLabel.label_settings.font_size = Globals.grid_size_x * 20
-		secondLabel.visible = true
-	elif index == 1:
-		currentMaze.get_node("TileMap").get_node("Label").visible = false
-		#hide_heuristics()
-		Globals.comparing = false
-		if is_instance_valid(secondMaze):
-			secondMaze.queue_free()
-	else:
-		currentMaze.get_node("TileMap").get_node("Label").visible = false
-		#show_heuristics()
-		Globals.comparing = false
-		if is_instance_valid(secondMaze):
-			secondMaze.queue_free()
+		2: # Compare both algorithms
+			#show_heuristics()
+			Globals.comparing = true
+			
+			# Duplicate current maze, tell it not to generate, and add to tree
+			secondMaze = currentMaze.duplicate()
+			secondMaze.get_node("TileMap").isSecondMaze = true
+			add_child(secondMaze)
+			
+			# Reposition second maze to the right
+			secondMaze.position += Vector2((currentMaze.get_node("TileMap").x_size+5)*64, 0)
+			
+			# Label mazes
+			var firstLabel = currentMaze.get_node("TileMap").get_node("Label")
+			firstLabel.text = "A*"
+			firstLabel.label_settings.font_size = Globals.grid_size_x * 20
+			firstLabel.visible = true
+			
+			var secondLabel = secondMaze.get_node("TileMap").get_node("Label")
+			secondLabel.text = "BFS"
+			secondLabel.label_settings.font_size = Globals.grid_size_x * 20
+			secondLabel.visible = true
 
 func _on_heuristic_option_button_item_selected(index):
 	match index:

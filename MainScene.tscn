@@ -60,6 +60,7 @@ focus_mode = 0
 text = "Delay:"
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/UI"]
+layout_mode = 0
 offset_left = 410.0
 offset_top = 12.0
 offset_right = 636.0
