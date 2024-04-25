@@ -11,6 +11,9 @@ var comparing = false
 signal enableSolveButtons
 signal disableSolveButtons
 
+signal currentMazeSolved(time)
+signal secondMazeSolved(time)
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass

@@ -2,3 +2,4 @@ res://MainScene.tscn
 res://MainScene.gd
 res://Maze.tscn
 res://TileMap.gd
+res://Globals.gd

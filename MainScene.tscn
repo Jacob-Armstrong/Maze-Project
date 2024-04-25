@@ -137,6 +137,24 @@ popup/item_2/id = 2
 popup/item_3/text = "Chebyshev"
 popup/item_3/id = 3
 
+[node name="TimerLabel1" type="Label" parent="CanvasLayer/UI"]
+visible = false
+layout_mode = 2
+offset_left = 238.0
+offset_top = 566.0
+offset_right = 354.0
+offset_bottom = 589.0
+text = "A* Solve Time: "
+
+[node name="TimerLabel2" type="Label" parent="CanvasLayer/UI"]
+visible = false
+layout_mode = 2
+offset_left = 238.0
+offset_top = 590.0
+offset_right = 354.0
+offset_bottom = 613.0
+text = "BFS Solve Time:"
+
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(323, 321)
 script = ExtResource("3_hsjw3")
