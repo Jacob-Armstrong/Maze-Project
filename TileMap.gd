@@ -16,6 +16,8 @@ var start_coords = Vector2i(0, 0)
 var path = []
 var pathFound = false
 
+var nodesSearched = 0
+
 var isSecondMaze
 var solving
 var timer = 0
@@ -36,7 +38,6 @@ func _ready():
 		create_global_border()
 		generate_maze()
 	else:
-		print("secondMaze spawned. path: " + str(path))
 		resetMaze()
 
 func _process(delta):
@@ -76,6 +77,7 @@ func resetMaze():
 	for coord in path:
 		create_path(coord)
 	path = []
+	nodesSearched = 0
 
 # Create border around maze
 func create_global_border():
@@ -164,7 +166,6 @@ func solve_astar(heuristic):
 	Globals.enableSolveButtons.emit()
 	solving = false
 	Globals.currentMazeSolved.emit(timer)
-	print("A* solving time: " + str(timer))
 	timer = 0
 
 # +--------------------------------------+
@@ -185,7 +186,7 @@ func solve_bfs():
 	var solved = false
 	
 	while frontier.size() > 0 or not solved:
-		var move = frontier.pop_back()
+		var move = frontier.pop_front()
 		
 		if move == Vector2i(x_size-1, y_size-1):
 			solved = true
@@ -200,17 +201,130 @@ func solve_bfs():
 				path.append(possible_move)
 				place_solved_path(possible_move)
 				await get_tree().create_timer(Globals.delay).timeout
+				nodesSearched += 1
 	
 	pathFound = true
 	
 	# Solving complete, reenable buttons
 	Globals.enableSolveButtons.emit()
+	print("BFS Nodes Searched: " + str(nodesSearched))
 	
 	# Pause timer, send time info, reset timer
 	solving = false
 	if isSecondMaze:
-		Globals.secondMazeSolved.emit(timer)
+		Globals.secondMazeSolved.emit(nodesSearched)
 	else:
-		Globals.currentMazeSolved.emit(timer)
-	print("BFS solving time: " + str(timer))
+		Globals.currentMazeSolved.emit(nodesSearched)
 	timer = 0
+
+# Function to calculate Manhattan distance between two points
+func manhattan_distance(start, end):
+	return abs(start.x - end.x) + abs(start.y - end.y)
+
+# Euclidean Distance
+func euclidean_distance(start, end):
+	var dx = end.x - start.x
+	var dy = end.y - start.y
+	return sqrt(dx * dx + dy * dy)
+
+# Chebyshev Distance
+func chebyshev_distance(start, end):
+	return max(abs(start.x - end.x), abs(start.y - end.y))
+
+func heuristic_calculation(start, end, heuristic):
+	match heuristic:
+		"euclidian":
+			return euclidean_distance(start, end)
+		"manhattan":
+			return manhattan_distance(start, end)
+		"octile":
+			return octile_distance(start, end)
+		"chebyshev":
+			return chebyshev_distance(start, end)
+
+# Octile Distance
+func octile_distance(start, end):
+	var dx = abs(start.x - end.x)
+	var dy = abs(start.y - end.y)
+	return sqrt(2) * min(dx, dy) + max(dx, dy) - min(dx, dy)
+
+class anode:
+	var parent
+	var position = Vector2i(0, 0)
+	
+	var f = 0
+	var g = 0
+	var h = 0
+
+# A* pathfinding function
+func find_path(start_pos, end_pos, heuristic):
+	
+	if pathFound:
+		print("resetting maze")
+		resetMaze()
+		
+	var start_node = anode.new()
+	var end_node = anode.new()
+	
+	var openList = []
+	var closedList = []
+	
+	openList.append(start_node)
+	
+	while openList.size() > 0:
+		var current_node = openList[0]
+		var current_index = 0
+		var index = 0
+		
+		for node in openList:
+			if node.f < current_node.f:
+				current_node = node
+				current_index = index
+			index += 1
+		
+		openList.pop_at(current_index)
+		closedList.append(current_node)
+		
+		# if goal found
+		if current_node == end_node:
+			path = []
+			var current = current_node
+			while current != null:
+				path.append(current.position)
+				place_solved_path(current.position)
+				current = current.parent
+			path.reverse()
+			return path
+		
+		var children = []
+		for new_position in adjacent:
+			print("current_node.position[0]: " + str(current_node.position[0]))
+			print("new_position[0]: " + str(new_position[0]))
+			print("current_node.position[1]: " + str(current_node.position[1]))
+			print("new_position[1]: " + str(new_position[1]))
+			var node_position = Vector2i(current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+			
+			if not isValidMove(node_position):
+				continue
+			
+			var new_node = anode.new()
+			new_node.parent = current_node
+			new_node.position = node_position
+			
+			children.append(new_node)
+		
+		for child in children:
+			
+			for closed_child in closedList:
+				if child == closed_child:
+					continue
+			
+			child.g = current_node.g + 1
+			child.h = heuristic_calculation(child.position, end_node.position, "euclidian")
+			child.f = child.g + child.h
+			
+			for open_node in openList:
+				if child == open_node and child.g > open_node.g:
+					continue
+			
+			openList.append(child)

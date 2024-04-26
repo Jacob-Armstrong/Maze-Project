@@ -21,7 +21,7 @@ var secondMaze
 # Default values
 var solveMethod = 0
 var solveType = "Astar"
-var heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+var heuristic = "euclidian"
 
 # +------------------------+
 # | Godot Script Functions |
@@ -50,7 +50,7 @@ func _on_generate_maze_button_pressed():
 	Globals.comparing = false
 	disable_solve_buttons()
 	hide_timers()
-	#show_heuristics()
+	show_heuristics()
 	
 	# Create a new maze and remove all others
 	var newMaze = maze.instantiate()
@@ -76,7 +76,8 @@ func _on_solve_button_pressed():
 	# Algorithm dropdown selection
 	match solveMethod:
 		0: # Astar
-			currentMaze.get_node("TileMap").solve_astar(heuristic)
+			#currentMaze.get_node("TileMap").solve_astar(heuristic)
+			currentMaze.get_node("TileMap").find_path(Vector2i(0, 0), Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1), heuristic)
 			solveType = "A*"
 		1: # Breadth First Search
 			currentMaze.get_node("TileMap").solve_bfs()
@@ -84,7 +85,8 @@ func _on_solve_button_pressed():
 		2: # Compare both algorithms
 			Globals.comparing = true
 			solveType = "A*"
-			currentMaze.get_node("TileMap").solve_astar(heuristic)
+			#currentMaze.get_node("TileMap").solve_astar(heuristic)
+			currentMaze.get_node("TileMap").find_path(Vector2i(0, 0), Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1), heuristic)
 			secondMaze.get_node("TileMap").solve_bfs()
 
 func enable_solve_buttons():
@@ -151,24 +153,24 @@ func _on_option_button_item_selected(index):
 func _on_heuristic_option_button_item_selected(index):
 	match index:
 		0:
-			heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+			heuristic = "euclidian"
 		1:
-			heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+			heuristic = "manhattan"
 		2:
-			heuristic = AStarGrid2D.HEURISTIC_OCTILE
+			heuristic = "octile"
 		3:
-			heuristic = AStarGrid2D.HEURISTIC_CHEBYSHEV
+			heuristic = "chebyshev"
 
 # +--------------------------+
 # | Timer Signal Connections |
 # +--------------------------+
 
-func current_solved_timer(time):
-	mainTimer.text = solveType + " Solve Time: " + str("%.1f" % time) + "s"
+func current_solved_timer(nodes):
+	mainTimer.text = solveType + " Nodes Searched: " + str(nodes)
 	mainTimer.visible = true
 
-func second_solved_timer(time):
-	secondTimer.text = "BFS Solve Time: " + str("%.1f" % time) + "s"
+func second_solved_timer(nodes):
+	secondTimer.text = "BFS Nodes Searched: " + str(nodes)
 	secondTimer.visible = true
 
 func hide_timers():

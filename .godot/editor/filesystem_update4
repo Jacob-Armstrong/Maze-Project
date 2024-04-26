@@ -1,4 +1,4 @@
-res://MainScene.tscn
-res://MainScene.gd
 res://Maze.tscn
+res://MainScene.tscn
 res://TileMap.gd
+res://MainScene.gd
