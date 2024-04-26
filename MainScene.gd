@@ -21,7 +21,7 @@ var secondMaze
 # Default values
 var solveMethod = 0
 var solveType = "Astar"
-var heuristic = "euclidian"
+var heuristic = "manhattan"
 
 # +------------------------+
 # | Godot Script Functions |
@@ -77,7 +77,7 @@ func _on_solve_button_pressed():
 	match solveMethod:
 		0: # Astar
 			#currentMaze.get_node("TileMap").solve_astar(heuristic)
-			currentMaze.get_node("TileMap").find_path(Vector2i(0, 0), Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1), heuristic)
+			currentMaze.get_node("TileMap").find_path(heuristic)
 			solveType = "A*"
 		1: # Breadth First Search
 			currentMaze.get_node("TileMap").solve_bfs()
@@ -86,7 +86,7 @@ func _on_solve_button_pressed():
 			Globals.comparing = true
 			solveType = "A*"
 			#currentMaze.get_node("TileMap").solve_astar(heuristic)
-			currentMaze.get_node("TileMap").find_path(Vector2i(0, 0), Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1), heuristic)
+			currentMaze.get_node("TileMap").find_path(heuristic)
 			secondMaze.get_node("TileMap").solve_bfs()
 
 func enable_solve_buttons():

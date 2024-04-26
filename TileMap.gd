@@ -12,6 +12,7 @@ const SOLVED_ATLAS_COORDS = Vector2i(2, 0)
 @export var x_size = 30
 @export var y_size = 30
 var start_coords = Vector2i(0, 0)
+var end_coords = Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1)
 
 var path = []
 var pathFound = false
@@ -19,8 +20,6 @@ var pathFound = false
 var nodesSearched = 0
 
 var isSecondMaze
-var solving
-var timer = 0
 
 # Array of cardinal directions
 var adjacent = [
@@ -41,8 +40,7 @@ func _ready():
 		resetMaze()
 
 func _process(delta):
-	if solving:
-		timer += delta
+	pass
 
 # +---------------------------+
 # | Maze Generation Functions |
@@ -139,8 +137,6 @@ func solve_astar(heuristic):
 	if pathFound:
 		resetMaze()
 	
-	solving = true
-	
 	# Initialize 2D Grid for Astar
 	var astargrid = AStarGrid2D.new()
 	astargrid.region = get_used_rect()
@@ -164,9 +160,7 @@ func solve_astar(heuristic):
 	
 	pathFound = true
 	Globals.enableSolveButtons.emit()
-	solving = false
-	Globals.currentMazeSolved.emit(timer)
-	timer = 0
+	Globals.currentMazeSolved.emit(0)
 
 # +--------------------------------------+
 # | Breadth First Maze Solving Algorithm |
@@ -178,7 +172,6 @@ func solve_bfs():
 	if pathFound:
 		resetMaze()
 	
-	solving = true
 	
 	# Create frontier and explored
 	var frontier: Array[Vector2i] = [start_coords]
@@ -188,7 +181,7 @@ func solve_bfs():
 	while frontier.size() > 0 or not solved:
 		var move = frontier.pop_front()
 		
-		if move == Vector2i(x_size-1, y_size-1):
+		if move == end_coords:
 			solved = true
 			break
 		
@@ -210,12 +203,10 @@ func solve_bfs():
 	print("BFS Nodes Searched: " + str(nodesSearched))
 	
 	# Pause timer, send time info, reset timer
-	solving = false
 	if isSecondMaze:
 		Globals.secondMazeSolved.emit(nodesSearched)
 	else:
 		Globals.currentMazeSolved.emit(nodesSearched)
-	timer = 0
 
 # Function to calculate Manhattan distance between two points
 func manhattan_distance(start, end):
@@ -248,83 +239,138 @@ func octile_distance(start, end):
 	var dy = abs(start.y - end.y)
 	return sqrt(2) * min(dx, dy) + max(dx, dy) - min(dx, dy)
 
-class anode:
-	var parent
+class Anode:
 	var position = Vector2i(0, 0)
 	
 	var f = 0
 	var g = 0
 	var h = 0
+	
+	func _to_string():
+		return "Position: " + str(position) + "\nf: " + str(f) + "\ng: " + str(g) + "\nh: " + str(h)
+
+func better_astar(heuristic):
+	
+	var openList = [start_coords]
+	var closedList = []
+	var g = 0
+	var f = INF
+	
+	var currentNode
+	
+	while not closedList.has(end_coords):
+		
+		
+		for node in openList:
+			if heuristic_calculation(node, end_coords, heuristic) > f:
+				currentNode = node
+		
+		if end_coords in closedList.keys():
+			print("we win yay")
+			place_solved_path(currentNode)
+			break
+		
+		
+		
+		pass
+
+
+func find_lowest_f(list):
+	var lowestF = INF
+	var lowestNode
+	for node in list:
+		if node.f < lowestF:
+			lowestF = node.f
+			lowestNode = node
+	return lowestNode
 
 # A* pathfinding function
-func find_path(start_pos, end_pos, heuristic):
+func find_path(heuristic):
 	
 	if pathFound:
-		print("resetting maze")
 		resetMaze()
-		
-	var start_node = anode.new()
-	var end_node = anode.new()
 	
 	var openList = []
 	var closedList = []
 	
-	openList.append(start_node)
+	var begin = Anode.new()
+	begin.position = start_coords
+	begin.g = 0
+	begin.h = heuristic_calculation(start_coords, end_coords, heuristic)
+	begin.f = begin.g + begin.h
+	
+	var end = Anode.new()
+	end.position = end_coords
+	
+	openList.append(begin)
 	
 	while openList.size() > 0:
-		var current_node = openList[0]
-		var current_index = 0
-		var index = 0
 		
-		for node in openList:
-			if node.f < current_node.f:
-				current_node = node
-				current_index = index
-			index += 1
+		#if openList.size() > 1:
+			#print("=====\nmore than one option. openList: " + str(openList))
+			#print("\nclosedList: " + str(closedList))
+			#print("=====")
 		
-		openList.pop_at(current_index)
-		closedList.append(current_node)
+		var current_node = find_lowest_f(openList)
 		
-		# if goal found
-		if current_node == end_node:
-			path = []
-			var current = current_node
-			while current != null:
-				path.append(current.position)
-				place_solved_path(current.position)
-				current = current.parent
-			path.reverse()
-			return path
+		var objectsToRemove = []
+		for i in range(openList.size()):
+			#print("current node's pos is " + str(current_node.position))
+			if current_node.position == openList[i].position:
+				#print("removing " + str(openList[i].position) + " from openList")
+				openList.remove_at(i)
+				break
 		
-		var children = []
-		for new_position in adjacent:
-			print("current_node.position[0]: " + str(current_node.position[0]))
-			print("new_position[0]: " + str(new_position[0]))
-			print("current_node.position[1]: " + str(current_node.position[1]))
-			print("new_position[1]: " + str(new_position[1]))
-			var node_position = Vector2i(current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+		#print("\n current_node is: ")
+		#print(current_node)
+		#print("\n")
+		
+		nodesSearched += 1
+		
+		if current_node.position == end_coords:
+			place_solved_path(current_node.position)
+			print("we won :D")
+			break
+		
+		for side in adjacent:
+			var possible_node = Anode.new()
+			possible_node.position = current_node.position + side
 			
-			if not isValidMove(node_position):
+			# Node is already in the open list
+			var inOpen = false
+			for node in openList:
+				if node.position == possible_node.position:
+					inOpen = true
+			if inOpen: continue
+			
+			# Node is in closed list
+			var inClosed = false
+			for node in closedList:
+				if node.position == possible_node.position:
+					inClosed = true
+			if inClosed: continue
+			
+			# Don't explore, just a wall
+			if not isValidMove(possible_node.position):
 				continue
 			
-			var new_node = anode.new()
-			new_node.parent = current_node
-			new_node.position = node_position
+			possible_node.g = current_node.g + 1
+			possible_node.h = heuristic_calculation(possible_node.position, end_coords, heuristic)
+			possible_node.f = possible_node.g + possible_node.h
 			
-			children.append(new_node)
+			openList.append(possible_node)
+			#print("appending " + str(possible_node.position) + " to openList")
+			#print("fcost: " + str(possible_node.f))
+			#print("current fcost: " + str(current_node.f))
 		
-		for child in children:
-			
-			for closed_child in closedList:
-				if child == closed_child:
-					continue
-			
-			child.g = current_node.g + 1
-			child.h = heuristic_calculation(child.position, end_node.position, "euclidian")
-			child.f = child.g + child.h
-			
-			for open_node in openList:
-				if child == open_node and child.g > open_node.g:
-					continue
-			
-			openList.append(child)
+		closedList.append(current_node)
+		place_solved_path(current_node.position)
+		path.append(current_node.position)
+		await get_tree().create_timer(Globals.delay).timeout
+	
+	Globals.enableSolveButtons.emit()
+	pathFound = true
+	print("A* Nodes Searched: " + str(nodesSearched))
+	
+
+# =================================
