@@ -88,9 +88,9 @@ func create_global_border():
 	for x in range(-1, x_size + 1): # Bottom Border
 		create_wall(Vector2i(x, y_size))
 
-# +----------------+
-# | Maze Generator |
-# +----------------+
+# +---------------------------------------+
+# | Recursive Backtracking Maze Generator |
+# +---------------------------------------+
 
 func generate_maze():
 	var frontier: Array[Vector2i] = [start_coords]
@@ -128,89 +128,9 @@ func generate_maze():
 	# Generation done. Reenable buttons.
 	Globals.enableSolveButtons.emit()
 
-# +------------------------------+
-# | Astar Maze Solving Algorithm |
-# +------------------------------+
-
-func solve_astar(heuristic):
-	
-	if pathFound:
-		resetMaze()
-	
-	# Initialize 2D Grid for Astar
-	var astargrid = AStarGrid2D.new()
-	astargrid.region = get_used_rect()
-	astargrid.cell_size = Vector2i(64, 64)
-	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-	astargrid.default_compute_heuristic = heuristic
-	astargrid.update()
-	
-	# Overlay maze walls onto Astar grid
-	var tiles = get_used_cells(LAYER)
-	for tile in tiles:
-		if is_wall(tile):
-			astargrid.set_point_solid(tile)
-	
-	# Solve maze using Astar, return list of coordinates
-	path = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
-	
-	for coord in path:
-		place_solved_path(coord)
-		await get_tree().create_timer(Globals.delay).timeout
-	
-	pathFound = true
-	Globals.enableSolveButtons.emit()
-	Globals.currentMazeSolved.emit(0)
-
-# +--------------------------------------+
-# | Breadth First Maze Solving Algorithm |
-# +--------------------------------------+
-
-func solve_bfs():
-	
-	# Reset maze if already solved
-	if pathFound:
-		resetMaze()
-	
-	
-	# Create frontier and explored
-	var frontier: Array[Vector2i] = [start_coords]
-	var explored = []
-	var solved = false
-	
-	while frontier.size() > 0 or not solved:
-		var move = frontier.pop_front()
-		
-		if move == end_coords:
-			solved = true
-			break
-		
-		for side in adjacent:
-			var possible_move = move + side
-			
-			if possible_move not in explored and isValidMove(possible_move):
-				frontier.append(possible_move)
-				explored.append(possible_move)
-				path.append(possible_move)
-				place_solved_path(possible_move)
-				await get_tree().create_timer(Globals.delay).timeout
-				nodesSearched += 1
-	
-	pathFound = true
-	
-	# Solving complete, reenable buttons
-	Globals.enableSolveButtons.emit()
-	print("BFS Nodes Searched: " + str(nodesSearched))
-	
-	# Pause timer, send time info, reset timer
-	if isSecondMaze:
-		Globals.secondMazeSolved.emit(nodesSearched)
-	else:
-		Globals.currentMazeSolved.emit(nodesSearched)
-
-# Function to calculate Manhattan distance between two points
-func manhattan_distance(start, end):
-	return abs(start.x - end.x) + abs(start.y - end.y)
+# +---------------------------------------+
+# | Astar Calculation Functions & Classes |
+# +---------------------------------------+
 
 # Euclidean Distance
 func euclidean_distance(start, end):
@@ -218,10 +138,21 @@ func euclidean_distance(start, end):
 	var dy = end.y - start.y
 	return sqrt(dx * dx + dy * dy)
 
+# Manhattan Distance
+func manhattan_distance(start, end):
+	return abs(start.x - end.x) + abs(start.y - end.y)
+
 # Chebyshev Distance
 func chebyshev_distance(start, end):
 	return max(abs(start.x - end.x), abs(start.y - end.y))
 
+# Octile Distance
+func octile_distance(start, end):
+	var dx = abs(start.x - end.x)
+	var dy = abs(start.y - end.y)
+	return sqrt(2) * min(dx, dy) + max(dx, dy) - min(dx, dy)
+
+# Switch based on chosen heuristic
 func heuristic_calculation(start, end, heuristic):
 	match heuristic:
 		"euclidian":
@@ -233,48 +164,28 @@ func heuristic_calculation(start, end, heuristic):
 		"chebyshev":
 			return chebyshev_distance(start, end)
 
-# Octile Distance
-func octile_distance(start, end):
-	var dx = abs(start.x - end.x)
-	var dy = abs(start.y - end.y)
-	return sqrt(2) * min(dx, dy) + max(dx, dy) - min(dx, dy)
-
+# Node class for Astar calculations
 class Anode:
 	var position = Vector2i(0, 0)
 	
-	var f = 0
+	# Number of moves it took to get to this node
 	var g = 0
+	
+	# Heuristic calculation
 	var h = 0
 	
+	# Total score (g + h)
+	var f = 0
+	
+	# Debug to_string() override
 	func _to_string():
 		return "Position: " + str(position) + "\nf: " + str(f) + "\ng: " + str(g) + "\nh: " + str(h)
 
-func better_astar(heuristic):
-	
-	var openList = [start_coords]
-	var closedList = []
-	var g = 0
-	var f = INF
-	
-	var currentNode
-	
-	while not closedList.has(end_coords):
-		
-		
-		for node in openList:
-			if heuristic_calculation(node, end_coords, heuristic) > f:
-				currentNode = node
-		
-		if end_coords in closedList.keys():
-			print("we win yay")
-			place_solved_path(currentNode)
-			break
-		
-		
-		
-		pass
+# +-------------------------------------+
+# | Custom Astar Maze Solving Algorithm |
+# +-------------------------------------+
 
-
+# Return node with lowest F value from given list
 func find_lowest_f(list):
 	var lowestF = INF
 	var lowestNode
@@ -285,7 +196,7 @@ func find_lowest_f(list):
 	return lowestNode
 
 # A* pathfinding function
-func find_path(heuristic):
+func solve_astar(heuristic):
 	
 	if pathFound:
 		resetMaze()
@@ -293,6 +204,7 @@ func find_path(heuristic):
 	var openList = []
 	var closedList = []
 	
+	# Create node for starting coords
 	var begin = Anode.new()
 	begin.position = start_coords
 	begin.g = 0
@@ -302,34 +214,24 @@ func find_path(heuristic):
 	var end = Anode.new()
 	end.position = end_coords
 	
+	# Add starting coords to open list
 	openList.append(begin)
 	
 	while openList.size() > 0:
 		
-		#if openList.size() > 1:
-			#print("=====\nmore than one option. openList: " + str(openList))
-			#print("\nclosedList: " + str(closedList))
-			#print("=====")
-		
 		var current_node = find_lowest_f(openList)
 		
-		var objectsToRemove = []
+		# Remove node from open list
 		for i in range(openList.size()):
-			#print("current node's pos is " + str(current_node.position))
 			if current_node.position == openList[i].position:
-				#print("removing " + str(openList[i].position) + " from openList")
 				openList.remove_at(i)
 				break
 		
-		#print("\n current_node is: ")
-		#print(current_node)
-		#print("\n")
-		
-		nodesSearched += 1
-		
+		# End of maze found
 		if current_node.position == end_coords:
 			place_solved_path(current_node.position)
-			print("we won :D")
+			path.append(current_node.position)
+			nodesSearched += 1
 			break
 		
 		for side in adjacent:
@@ -359,18 +261,98 @@ func find_path(heuristic):
 			possible_node.f = possible_node.g + possible_node.h
 			
 			openList.append(possible_node)
-			#print("appending " + str(possible_node.position) + " to openList")
-			#print("fcost: " + str(possible_node.f))
-			#print("current fcost: " + str(current_node.f))
 		
 		closedList.append(current_node)
+		nodesSearched += 1
 		place_solved_path(current_node.position)
 		path.append(current_node.position)
 		await get_tree().create_timer(Globals.delay).timeout
 	
 	Globals.enableSolveButtons.emit()
+	Globals.currentMazeSolved.emit(nodesSearched)
 	pathFound = true
-	print("A* Nodes Searched: " + str(nodesSearched))
-	
 
-# =================================
+# +--------------------------------------+
+# | Breadth First Maze Solving Algorithm |
+# +--------------------------------------+
+
+func solve_bfs():
+	
+	# Reset maze if already solved
+	if pathFound:
+		resetMaze()
+	
+	# Create frontier and explored
+	var frontier: Array[Vector2i] = [start_coords]
+	var explored = []
+	var solved = false
+	
+	while frontier.size() > 0 or not solved:
+		
+		var move = frontier.pop_front()
+		
+		# End of maze found
+		if move == end_coords:
+			solved = true
+			break
+		
+		# Check each direction (NSEW)
+		for side in adjacent:
+			var possible_move = move + side
+			
+			if possible_move not in explored and isValidMove(possible_move):
+				
+				# Add to frontier AND explored
+				frontier.append(possible_move)
+				explored.append(possible_move)
+				
+				# Visualizer implementations
+				path.append(possible_move)
+				place_solved_path(possible_move)
+				await get_tree().create_timer(Globals.delay).timeout
+				nodesSearched += 1
+	
+	pathFound = true
+	
+	# Solving complete, reenable buttons
+	Globals.enableSolveButtons.emit()
+	
+	# Display # of nodes solved
+	if isSecondMaze:
+		Globals.secondMazeSolved.emit(nodesSearched)
+	else:
+		Globals.currentMazeSolved.emit(nodesSearched)
+
+# +-----------------------------------+
+# | UNUSED Godot Astar Implementation |
+# +-----------------------------------+
+
+func godot_astar(heuristic):
+	
+	if pathFound:
+		resetMaze()
+	
+	# Initialize 2D Grid for Astar
+	var astargrid = AStarGrid2D.new()
+	astargrid.region = get_used_rect()
+	astargrid.cell_size = Vector2i(64, 64)
+	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	astargrid.default_compute_heuristic = heuristic
+	astargrid.update()
+	
+	# Overlay maze walls onto Astar grid
+	var tiles = get_used_cells(LAYER)
+	for tile in tiles:
+		if is_wall(tile):
+			astargrid.set_point_solid(tile)
+	
+	# Solve maze using Astar, return list of coordinates
+	path = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
+	
+	for coord in path:
+		place_solved_path(coord)
+		await get_tree().create_timer(Globals.delay).timeout
+	
+	pathFound = true
+	Globals.enableSolveButtons.emit()
+	Globals.currentMazeSolved.emit(0)

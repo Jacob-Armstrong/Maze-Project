@@ -137,7 +137,7 @@ popup/item_2/id = 2
 popup/item_3/text = "Chebyshev"
 popup/item_3/id = 3
 
-[node name="TimerLabel1" type="Label" parent="CanvasLayer/UI"]
+[node name="NodeDisplay1" type="Label" parent="CanvasLayer/UI"]
 visible = false
 layout_mode = 2
 offset_left = 238.0
@@ -146,7 +146,7 @@ offset_right = 354.0
 offset_bottom = 589.0
 text = "A* Solve Time: "
 
-[node name="TimerLabel2" type="Label" parent="CanvasLayer/UI"]
+[node name="NodeDisplay2" type="Label" parent="CanvasLayer/UI"]
 visible = false
 layout_mode = 2
 offset_left = 238.0
