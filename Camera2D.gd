@@ -12,7 +12,7 @@ func adjust_camera():
 	
 	var maze = maze_parent.get_node("TileMap")
 	var tile_size = 64
-	var maze_size = Vector2(maze.x_size + 30, maze.y_size + 30) * tile_size
+	var maze_size = Vector2(maze.x_size + 40, maze.y_size + 40) * tile_size
 	
 	if Globals.comparing:
 		maze_size *= 2

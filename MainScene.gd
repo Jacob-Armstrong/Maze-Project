@@ -11,8 +11,8 @@ const maze = preload("res://Maze.tscn")
 @onready var heuristicsOptionsButton = $CanvasLayer/UI/HeuristicOptionButton
 
 # Timer label references
-@onready var mainTimer = $CanvasLayer/UI/TimerLabel1
-@onready var secondTimer = $CanvasLayer/UI/TimerLabel2
+@onready var nodeDisplay = $CanvasLayer/UI/NodeDisplay1
+@onready var nodeDisplay2 = $CanvasLayer/UI/NodeDisplay2
 
 # Maze references
 var currentMaze
@@ -21,7 +21,7 @@ var secondMaze
 # Default values
 var solveMethod = 0
 var solveType = "Astar"
-var heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+var heuristic = "euclidian"
 
 # +------------------------+
 # | Godot Script Functions |
@@ -31,8 +31,8 @@ var heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
 func _ready():
 	Globals.enableSolveButtons.connect(enable_solve_buttons)
 	Globals.disableSolveButtons.connect(disable_solve_buttons)
-	Globals.currentMazeSolved.connect(current_solved_timer)
-	Globals.secondMazeSolved.connect(second_solved_timer)
+	Globals.currentMazeSolved.connect(current_nodes_searched)
+	Globals.secondMazeSolved.connect(second_nodes_searched)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -49,8 +49,8 @@ func _on_generate_maze_button_pressed():
 	solveMethod = 0
 	Globals.comparing = false
 	disable_solve_buttons()
-	hide_timers()
-	#show_heuristics()
+	hide_displays()
+	show_heuristics()
 	
 	# Create a new maze and remove all others
 	var newMaze = maze.instantiate()
@@ -71,7 +71,7 @@ func _on_h_slider_value_changed(value):
 
 func _on_solve_button_pressed():
 	disable_solve_buttons()
-	hide_timers()
+	hide_displays()
 	
 	# Algorithm dropdown selection
 	match solveMethod:
@@ -110,7 +110,9 @@ func _on_check_button_toggled(toggled_on):
 
 func _on_option_button_item_selected(index):
 	solveMethod = index
-	hide_timers()
+	hide_displays()
+	
+	currentMaze.get_node("TileMap").resetMaze()
 	
 	# Algorithm dropdown selection
 	match solveMethod:
@@ -118,14 +120,16 @@ func _on_option_button_item_selected(index):
 			
 			# Hide labels, only using one algorithm
 			currentMaze.get_node("TileMap").get_node("Label").visible = false
-			#if solveMethod == 0:
-				#show_heuristics()
+			if solveMethod == 0:
+				show_heuristics()
+			else:
+				hide_heuristics()
 			Globals.comparing = false
 			if is_instance_valid(secondMaze):
 				secondMaze.queue_free()
 		
 		2: # Compare both algorithms
-			#show_heuristics()
+			show_heuristics()
 			Globals.comparing = true
 			
 			# Duplicate current maze, tell it not to generate, and add to tree
@@ -151,29 +155,29 @@ func _on_option_button_item_selected(index):
 func _on_heuristic_option_button_item_selected(index):
 	match index:
 		0:
-			heuristic = AStarGrid2D.HEURISTIC_EUCLIDEAN
+			heuristic = "euclidian"
 		1:
-			heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
+			heuristic = "manhattan"
 		2:
-			heuristic = AStarGrid2D.HEURISTIC_OCTILE
+			heuristic = "octile"
 		3:
-			heuristic = AStarGrid2D.HEURISTIC_CHEBYSHEV
+			heuristic = "chebyshev"
 
 # +--------------------------+
 # | Timer Signal Connections |
 # +--------------------------+
 
-func current_solved_timer(time):
-	mainTimer.text = solveType + " Solve Time: " + str("%.1f" % time) + "s"
-	mainTimer.visible = true
+func hide_displays():
+	nodeDisplay.visible = false
+	nodeDisplay2.visible = false
 
-func second_solved_timer(time):
-	secondTimer.text = "BFS Solve Time: " + str("%.1f" % time) + "s"
-	secondTimer.visible = true
+func current_nodes_searched(nodes):
+	if solveType == "A*":
+		nodeDisplay.text = heuristic.capitalize() + " A* Nodes Searched: " + str(nodes)
+	else:
+		nodeDisplay.text = "BFS Nodes Searched: " + str(nodes)
+	nodeDisplay.visible = true
 
-func hide_timers():
-	mainTimer.visible = false
-	secondTimer.visible = false
-
-func formatTime(time):
-	pass
+func second_nodes_searched(nodes):
+	nodeDisplay2.text = "BFS Nodes Searched: " + str(nodes)
+	nodeDisplay2.visible = true
