@@ -1,5 +1,6 @@
 res://Maze.tscn
-res://TileMap.gd
 res://MainScene.tscn
+res://Globals.gd
 res://MainScene.gd
-res://Camera2D.gd
+res://TileMap.gd
+res://LabelPreset.tscn

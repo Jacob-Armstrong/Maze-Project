@@ -20,10 +20,8 @@ sources/0 = SubResource("TileSetAtlasSource_2kf26")
 font_size = 50
 
 [node name="Maze" type="Node2D"]
-process_mode = 1
 
 [node name="TileMap" type="TileMap" parent="."]
-process_mode = 1
 tile_set = SubResource("TileSet_2k5ei")
 format = 2
 script = ExtResource("2_o55o2")

@@ -1,11 +1,11 @@
 Label
+Button
 CheckButton
 CheckBox
 HBoxContainer
 Panel
 ColorRect
 GridContainer
-Button
 RichTextLabel
 Container
 VBoxContainer

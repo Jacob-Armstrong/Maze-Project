@@ -10,6 +10,10 @@ const maze = preload("res://Maze.tscn")
 @onready var heuristicsLabel = $CanvasLayer/UI/HeuristicLabel
 @onready var heuristicsOptionsButton = $CanvasLayer/UI/HeuristicOptionButton
 
+@onready var stepToggle = $CanvasLayer/UI/StepToggle
+@onready var stepButton = $CanvasLayer/UI/StepButton
+@onready var stepLabel = $CanvasLayer/UI/StepLabel
+
 # Timer label references
 @onready var nodeDisplay = $CanvasLayer/UI/NodeDisplay1
 @onready var nodeDisplay2 = $CanvasLayer/UI/NodeDisplay2
@@ -33,6 +37,8 @@ func _ready():
 	Globals.disableSolveButtons.connect(disable_solve_buttons)
 	Globals.currentMazeSolved.connect(current_nodes_searched)
 	Globals.secondMazeSolved.connect(second_nodes_searched)
+	Globals.showStepButton.connect(show_step_button)
+	Globals.appendStepLabel.connect(append_step_label)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -100,13 +106,29 @@ func disable_solve_buttons():
 func show_heuristics():
 	heuristicsLabel.visible = true
 	heuristicsOptionsButton.visible = true
+	stepToggle.visible = true
 
 func hide_heuristics():
 	heuristicsLabel.visible = false
 	heuristicsOptionsButton.visible = false
+	stepToggle.visible = false
 
 func _on_check_button_toggled(toggled_on):
 	Globals.isDelay = toggled_on
+
+func _on_step_toggle_toggled(toggled_on):
+	Globals.stepToggle = toggled_on
+
+func show_step_button():
+	stepButton.visible = true
+
+func _on_step_button_pressed():
+	Engine.time_scale = 1
+	stepButton.visible = false
+	stepLabel.text = ""
+
+func append_step_label(text):
+	stepLabel.text += text + "\n\n"
 
 func _on_option_button_item_selected(index):
 	solveMethod = index

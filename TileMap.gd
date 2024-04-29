@@ -1,5 +1,7 @@
 extends TileMap
 
+@onready var labelPreset = preload("res://LabelPreset.tscn")
+
 # +--------------------+
 # | Constant Variables |
 # +--------------------+
@@ -8,6 +10,8 @@ const SOURCE = 0
 const PATH_ATLAS_COORDS = Vector2i(0, 0)
 const WALL_ATLAS_COORDS = Vector2i(1, 0)
 const SOLVED_ATLAS_COORDS = Vector2i(2, 0)
+const FINAL_PATH_ATLAS_COORDS = Vector2i(3, 0)
+const STEP_ATLAS_COORDS = Vector2i(4, 0)
 
 @export var x_size = 30
 @export var y_size = 30
@@ -57,6 +61,12 @@ func create_path(coords: Vector2):
 # Add red "solved" tile to specified coordinates
 func place_solved_path(coords):
 	set_cell(LAYER, coords, SOURCE, SOLVED_ATLAS_COORDS)
+
+func place_final_path(coords):
+	set_cell(LAYER, coords, SOURCE, FINAL_PATH_ATLAS_COORDS)
+	
+func place_step_options(coords):
+	set_cell(LAYER, coords, SOURCE, STEP_ATLAS_COORDS)
 
 # Return true if tile is wall
 func is_wall(coords: Vector2): 
@@ -262,6 +272,31 @@ func solve_astar(heuristic):
 			
 			openList.append(possible_node)
 		
+		var children = get_children()
+		for child in children:
+			if child is Node2D:
+				child.queue_free()
+		
+		# Stepthrough information
+		if openList.size() > 1 and Globals.stepToggle:
+			
+			var optionNum = 1
+			var folder = Node2D.new()
+			add_child(folder)
+				
+			for node in openList:
+				place_step_options(node.position)
+				var label = labelPreset.instantiate()
+				folder.add_child(label)
+				label.position = map_to_local(node.position) - Vector2(15, 30)
+				label.text = str(optionNum)
+				Globals.appendStepLabel.emit("Option " + str(optionNum) + ": \n" + str(node))
+				optionNum += 1
+				
+			Engine.time_scale = 0
+			Globals.showStepButton.emit()
+		
+		# Searching node...
 		closedList.append(current_node)
 		nodesSearched += 1
 		place_solved_path(current_node.position)
@@ -271,6 +306,7 @@ func solve_astar(heuristic):
 	Globals.enableSolveButtons.emit()
 	Globals.currentMazeSolved.emit(nodesSearched)
 	pathFound = true
+	retrace_path()
 
 # +--------------------------------------+
 # | Breadth First Maze Solving Algorithm |
@@ -313,6 +349,7 @@ func solve_bfs():
 				nodesSearched += 1
 	
 	pathFound = true
+	retrace_path()
 	
 	# Solving complete, reenable buttons
 	Globals.enableSolveButtons.emit()
@@ -323,21 +360,16 @@ func solve_bfs():
 	else:
 		Globals.currentMazeSolved.emit(nodesSearched)
 
-# +-----------------------------------+
-# | UNUSED Godot Astar Implementation |
-# +-----------------------------------+
+# +----------------------------+
+# | Godot Astar Implementation |
+# +----------------------------+
 
-func godot_astar(heuristic):
-	
-	if pathFound:
-		resetMaze()
-	
+func retrace_path():
 	# Initialize 2D Grid for Astar
 	var astargrid = AStarGrid2D.new()
 	astargrid.region = get_used_rect()
 	astargrid.cell_size = Vector2i(64, 64)
 	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-	astargrid.default_compute_heuristic = heuristic
 	astargrid.update()
 	
 	# Overlay maze walls onto Astar grid
@@ -346,13 +378,10 @@ func godot_astar(heuristic):
 		if is_wall(tile):
 			astargrid.set_point_solid(tile)
 	
-	# Solve maze using Astar, return list of coordinates
-	path = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
+	var retracepath = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
 	
-	for coord in path:
-		place_solved_path(coord)
+	for coord in retracepath:
+		place_final_path(coord)
 		await get_tree().create_timer(Globals.delay).timeout
 	
-	pathFound = true
 	Globals.enableSolveButtons.emit()
-	Globals.currentMazeSolved.emit(0)
