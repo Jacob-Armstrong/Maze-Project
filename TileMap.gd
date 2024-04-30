@@ -1,28 +1,35 @@
 extends TileMap
 
+# Label template for Astar stepthrough
 @onready var labelPreset = preload("res://LabelPreset.tscn")
 
 # +--------------------+
 # | Constant Variables |
 # +--------------------+
+
+# Necessary info to place a tile on the tilemap
 const LAYER = 0
 const SOURCE = 0
+
+# Coordinates in the tile atlas (an array of colored cubes)
 const PATH_ATLAS_COORDS = Vector2i(0, 0)
 const WALL_ATLAS_COORDS = Vector2i(1, 0)
 const SOLVED_ATLAS_COORDS = Vector2i(2, 0)
 const FINAL_PATH_ATLAS_COORDS = Vector2i(3, 0)
 const STEP_ATLAS_COORDS = Vector2i(4, 0)
 
+# Maze size variables
 @export var x_size = 30
 @export var y_size = 30
 var start_coords = Vector2i(0, 0)
 var end_coords = Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1)
 
+# Info about tiles placed
 var path = []
 var pathFound = false
-
 var nodesSearched = 0
 
+# True if maze was duplicated for comparison
 var isSecondMaze
 
 # Array of cardinal directions
@@ -33,6 +40,7 @@ var adjacent = [
 	Vector2i(0, -1) # Up
 ]
 
+# Function is run when script is first created
 func _ready():
 	y_size = Globals.grid_size_x
 	x_size = Globals.grid_size_y
@@ -62,14 +70,16 @@ func create_path(coords: Vector2):
 func place_solved_path(coords):
 	set_cell(LAYER, coords, SOURCE, SOLVED_ATLAS_COORDS)
 
+# Add green "final path" tile to specified coordinates
 func place_final_path(coords):
 	set_cell(LAYER, coords, SOURCE, FINAL_PATH_ATLAS_COORDS)
-	
+
+# Add blue "option" tile to specified coordinates
 func place_step_options(coords):
 	set_cell(LAYER, coords, SOURCE, STEP_ATLAS_COORDS)
 
 # Return true if tile is wall
-func is_wall(coords: Vector2): 
+func isWall(coords: Vector2): 
 	return get_cell_atlas_coords(LAYER, coords) == WALL_ATLAS_COORDS
 
 # Return true if tile is even
@@ -78,7 +88,7 @@ func isWallCoord(coords: Vector2i):
 
 # Move is in bounds and not a wall
 func isValidMove(coords: Vector2): 
-	return (coords.x >= 0 and coords.y >= 0 and coords.x < x_size and coords.y < y_size and not is_wall(coords))
+	return (coords.x >= 0 and coords.y >= 0 and coords.x < x_size and coords.y < y_size and not isWall(coords))
 
 # Reset maze if already solved
 func resetMaze():
@@ -98,9 +108,9 @@ func create_global_border():
 	for x in range(-1, x_size + 1): # Bottom Border
 		create_wall(Vector2i(x, y_size))
 
-# +---------------------------------------+
-# | Recursive Backtracking Maze Generator |
-# +---------------------------------------+
+# +-----------------------------------+
+# | Depth First Search Maze Generator |
+# +-----------------------------------+
 
 func generate_maze():
 	var frontier: Array[Vector2i] = [start_coords]
@@ -120,6 +130,8 @@ func generate_maze():
 		
 		var valid_path = false
 		adjacent.shuffle()
+		
+		# Check cardinal directions (NESW)
 		for side in adjacent:
 			var possible_move = move + side
 			
@@ -176,6 +188,8 @@ func heuristic_calculation(start, end, heuristic):
 
 # Node class for Astar calculations
 class Anode:
+	
+	# Tilemap coordinates of node
 	var position = Vector2i(0, 0)
 	
 	# Number of moves it took to get to this node
@@ -221,9 +235,6 @@ func solve_astar(heuristic):
 	begin.h = heuristic_calculation(start_coords, end_coords, heuristic)
 	begin.f = begin.g + begin.h
 	
-	var end = Anode.new()
-	end.position = end_coords
-	
 	# Add starting coords to open list
 	openList.append(begin)
 	
@@ -244,6 +255,7 @@ func solve_astar(heuristic):
 			nodesSearched += 1
 			break
 		
+		# Check cardinal directions (NESW)
 		for side in adjacent:
 			var possible_node = Anode.new()
 			possible_node.position = current_node.position + side
@@ -272,12 +284,13 @@ func solve_astar(heuristic):
 			
 			openList.append(possible_node)
 		
+		# Remove labels from prior step
 		var children = get_children()
 		for child in children:
 			if child is Node2D:
 				child.queue_free()
 		
-		# Stepthrough information
+		# Stepthrough behavior
 		if openList.size() > 1 and Globals.stepToggle:
 			
 			var optionNum = 1
@@ -303,7 +316,7 @@ func solve_astar(heuristic):
 		path.append(current_node.position)
 		await get_tree().create_timer(Globals.delay).timeout
 	
-	Globals.enableSolveButtons.emit()
+	# Maze solved
 	Globals.currentMazeSolved.emit(nodesSearched)
 	pathFound = true
 	retrace_path()
@@ -332,7 +345,7 @@ func solve_bfs():
 			solved = true
 			break
 		
-		# Check each direction (NSEW)
+		# Check cardinal directions (NESW)
 		for side in adjacent:
 			var possible_move = move + side
 			
@@ -348,11 +361,9 @@ func solve_bfs():
 				await get_tree().create_timer(Globals.delay).timeout
 				nodesSearched += 1
 	
+	# Maze solved
 	pathFound = true
 	retrace_path()
-	
-	# Solving complete, reenable buttons
-	Globals.enableSolveButtons.emit()
 	
 	# Display # of nodes solved
 	if isSecondMaze:
@@ -365,6 +376,7 @@ func solve_bfs():
 # +----------------------------+
 
 func retrace_path():
+	
 	# Initialize 2D Grid for Astar
 	var astargrid = AStarGrid2D.new()
 	astargrid.region = get_used_rect()
@@ -375,12 +387,13 @@ func retrace_path():
 	# Overlay maze walls onto Astar grid
 	var tiles = get_used_cells(LAYER)
 	for tile in tiles:
-		if is_wall(tile):
+		if isWall(tile):
 			astargrid.set_point_solid(tile)
 	
 	var retracepath = astargrid.get_id_path(Vector2i(start_coords.x, start_coords.y), Vector2i(x_size-1, y_size-1))
 	
 	for coord in retracepath:
+		path.append(coord)
 		place_final_path(coord)
 		await get_tree().create_timer(Globals.delay).timeout
 	
