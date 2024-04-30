@@ -161,7 +161,6 @@ text = "BFS Nodes Searched: 1583"
 label_settings = SubResource("LabelSettings_6fb38")
 
 [node name="StepToggle" type="CheckButton" parent="CanvasLayer/UI"]
-visible = false
 layout_mode = 0
 offset_left = 10.0
 offset_top = 55.0
@@ -185,9 +184,9 @@ text = "Next Step"
 [node name="StepLabel" type="Label" parent="CanvasLayer/UI"]
 layout_mode = 0
 offset_left = 4.0
-offset_top = 88.0
+offset_top = 110.0
 offset_right = 130.0
-offset_bottom = 582.0
+offset_bottom = 604.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(480, 480)

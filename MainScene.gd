@@ -126,7 +126,7 @@ func _on_step_button_pressed():
 	stepLabel.text = ""
 
 func append_step_label(text):
-	stepLabel.text += "\n\n" + text
+	stepLabel.text += text + "\n\n"
 
 func _on_option_button_item_selected(index):
 	solveMethod = index
