@@ -167,6 +167,7 @@ offset_left = 10.0
 offset_top = 55.0
 offset_right = 174.0
 offset_bottom = 86.0
+focus_mode = 0
 text = "Show A* Steps:"
 
 [node name="StepButton" type="Button" parent="CanvasLayer/UI"]
