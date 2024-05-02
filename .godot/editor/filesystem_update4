@@ -1,6 +1,5 @@
 res://Maze.tscn
-res://TileMap.gd
-res://MainScene.tscn
-res://MainScene.gd
-res://LabelPreset.tscn
 res://README.md
+res://MainScene.tscn
+res://LabelPreset.tscn
+res://TileMap.gd

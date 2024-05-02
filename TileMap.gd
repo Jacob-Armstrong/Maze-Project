@@ -222,7 +222,7 @@ func find_lowest_f(list):
 # A* pathfinding function
 func solve_astar(heuristic):
 	
-	if pathFound:
+	if path.size() > 0:
 		resetMaze()
 	
 	var openList = []
@@ -328,7 +328,7 @@ func solve_astar(heuristic):
 func solve_bfs():
 	
 	# Reset maze if already solved
-	if pathFound:
+	if path.size() > 0:
 		resetMaze()
 	
 	# Create frontier and explored
