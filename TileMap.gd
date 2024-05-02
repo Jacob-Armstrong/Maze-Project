@@ -164,15 +164,15 @@ func euclidean_distance(start, end):
 func manhattan_distance(start, end):
 	return abs(start.x - end.x) + abs(start.y - end.y)
 
-# Chebyshev Distance
-func chebyshev_distance(start, end):
-	return max(abs(start.x - end.x), abs(start.y - end.y))
-
 # Octile Distance
 func octile_distance(start, end):
 	var dx = abs(start.x - end.x)
 	var dy = abs(start.y - end.y)
 	return sqrt(2) * min(dx, dy) + max(dx, dy) - min(dx, dy)
+
+# Chebyshev Distance
+func chebyshev_distance(start, end):
+	return max(abs(start.x - end.x), abs(start.y - end.y))
 
 # Switch based on chosen heuristic
 func heuristic_calculation(start, end, heuristic):
