@@ -90,6 +90,9 @@ func _on_solve_button_pressed():
 			solveType = "A*"
 			currentMaze.get_node("TileMap").solve_astar(heuristic)
 			secondMaze.get_node("TileMap").solve_bfs()
+		3: # Better A*
+			currentMaze.get_node("TileMap").solve_better_astar(heuristic)
+			solveType = "BetterA*"
 
 func enable_solve_buttons():
 	solveButton.disabled = false
@@ -171,6 +174,12 @@ func _on_option_button_item_selected(index):
 			secondLabel.text = "BFS"
 			secondLabel.label_settings.font_size = Globals.grid_size_x * 20
 			secondLabel.visible = true
+		
+		3: # Better A*
+			currentMaze.get_node("TileMap").get_node("Label").visible = false
+			Globals.comparing = false
+			if is_instance_valid(secondMaze):
+				secondMaze.queue_free()
 
 func _on_heuristic_option_button_item_selected(index):
 	match index:
@@ -194,8 +203,10 @@ func hide_displays():
 func current_nodes_searched(nodes):
 	if solveType == "A*":
 		nodeDisplay.text = heuristic.capitalize() + " A* Nodes Searched: " + str(nodes)
-	else:
+	elif solveType == "BFS":
 		nodeDisplay.text = "BFS Nodes Searched: " + str(nodes)
+	elif solveType == "BetterA*":
+		nodeDisplay.text = heuristic.capitalize() + "Better A* Nodes Searched: " + str(nodes)
 	nodeDisplay.visible = true
 
 func second_nodes_searched(nodes):

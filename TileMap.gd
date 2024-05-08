@@ -205,9 +205,9 @@ class Anode:
 	func _to_string():
 		return "Position: " + str(position) + "\nf: " + str(f) + "\ng: " + str(g) + "\nh: " + str(h)
 
-# +-------------------------------------+
-# | Custom Astar Maze Solving Algorithm |
-# +-------------------------------------+
+# +------------------------------+
+# | Astar Maze Solving Algorithm |
+# +------------------------------+
 
 # Return node with lowest F value from given list
 func find_lowest_f(list):
@@ -279,6 +279,113 @@ func solve_astar(heuristic):
 				continue
 			
 			possible_node.g = current_node.g + 1
+			possible_node.h = heuristic_calculation(possible_node.position, end_coords, heuristic)
+			possible_node.f = possible_node.g + possible_node.h
+			
+			openList.append(possible_node)
+		
+		# Remove labels from prior step
+		var children = get_children()
+		for child in children:
+			if child is Node2D:
+				child.queue_free()
+		
+		# Stepthrough behavior
+		if openList.size() > 1 and Globals.stepToggle:
+			
+			var optionNum = 1
+			var folder = Node2D.new()
+			add_child(folder)
+				
+			for node in openList:
+				place_step_options(node.position)
+				var label = labelPreset.instantiate()
+				folder.add_child(label)
+				label.position = map_to_local(node.position) - Vector2(15, 30)
+				label.text = str(optionNum)
+				Globals.appendStepLabel.emit("Option " + str(optionNum) + ": \n" + str(node))
+				optionNum += 1
+				
+			Engine.time_scale = 0
+			Globals.showStepButton.emit()
+		
+		# Searching node...
+		closedList.append(current_node)
+		nodesSearched += 1
+		place_solved_path(current_node.position)
+		path.append(current_node.position)
+		await get_tree().create_timer(Globals.delay).timeout
+	
+	# Maze solved
+	Globals.currentMazeSolved.emit(nodesSearched)
+	pathFound = true
+	retrace_path()
+
+# +-------------------------------------+
+# | Custom Astar Maze Solving Algorithm |
+# +-------------------------------------+
+
+# A* pathfinding function
+func solve_better_astar(heuristic):
+	
+	if path.size() > 0:
+		resetMaze()
+	
+	var openList = []
+	var closedList = []
+	
+	# Create node for starting coords
+	var begin = Anode.new()
+	begin.position = start_coords
+	begin.g = 0
+	begin.h = heuristic_calculation(start_coords, end_coords, heuristic)
+	begin.f = begin.g + begin.h
+	
+	# Add starting coords to open list
+	openList.append(begin)
+	
+	while openList.size() > 0:
+		
+		var current_node = find_lowest_f(openList)
+		
+		# Remove node from open list
+		for i in range(openList.size()):
+			if current_node.position == openList[i].position:
+				openList.remove_at(i)
+				break
+		
+		# End of maze found
+		if current_node.position == end_coords:
+			place_solved_path(current_node.position)
+			path.append(current_node.position)
+			nodesSearched += 1
+			break
+		
+		# Check cardinal directions (NESW)
+		for side in adjacent:
+			var possible_node = Anode.new()
+			possible_node.position = current_node.position + side
+			
+			# Node is already in the open list
+			var inOpen = false
+			for node in openList:
+				if node.position == possible_node.position:
+					inOpen = true
+			if inOpen: continue
+			
+			# Node is in closed list
+			var inClosed = false
+			for node in closedList:
+				if node.position == possible_node.position:
+					inClosed = true
+			if inClosed: continue
+			
+			# Don't explore, just a wall
+			if not isValidMove(possible_node.position):
+				continue
+			
+			# REMOVE G VALUE FROM EQUATION
+			#possible_node.g = current_node.g
 			possible_node.h = heuristic_calculation(possible_node.position, end_coords, heuristic)
 			possible_node.f = possible_node.g + possible_node.h
 			
