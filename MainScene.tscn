@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://Camera2D.gd" id="3_hsjw3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fb38"]
-font_size = 30
+font_size = 20
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_jlnit")
@@ -64,7 +64,7 @@ text = "Delay:"
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/UI"]
 layout_mode = 0
-offset_left = 685.0
+offset_left = 660.0
 offset_top = 12.0
 offset_right = 951.0
 offset_bottom = 54.0
@@ -92,10 +92,10 @@ popup/item_0/text = "A*"
 popup/item_0/id = 0
 popup/item_1/text = "BFS"
 popup/item_1/id = 1
-popup/item_2/text = "A* vs BFS"
-popup/item_2/id = 2
-popup/item_3/text = "Better A*"
-popup/item_3/id = 3
+popup/item_2/text = "Better A*"
+popup/item_2/id = 3
+popup/item_3/text = "Compare All"
+popup/item_3/id = 2
 
 [node name="SolveButton" type="Button" parent="CanvasLayer/UI/ColorRect/HBoxContainer"]
 layout_mode = 2
@@ -146,11 +146,13 @@ popup/item_3/id = 3
 visible = false
 layout_mode = 2
 offset_left = 230.0
-offset_top = 850.0
+offset_top = 870.0
 offset_right = 731.0
-offset_bottom = 892.0
+offset_bottom = 912.0
 text = "Euclidian A* Nodes Searched: 1227"
 label_settings = SubResource("LabelSettings_6fb38")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="NodeDisplay2" type="Label" parent="CanvasLayer/UI"]
 visible = false
@@ -161,6 +163,20 @@ offset_right = 680.0
 offset_bottom = 932.0
 text = "BFS Nodes Searched: 1583"
 label_settings = SubResource("LabelSettings_6fb38")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NodeDisplay3" type="Label" parent="CanvasLayer/UI"]
+visible = false
+layout_mode = 2
+offset_left = 280.0
+offset_top = 910.0
+offset_right = 681.0
+offset_bottom = 952.0
+text = "Euclidian Better A* Nodes Searched: 1200"
+label_settings = SubResource("LabelSettings_6fb38")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StepToggle" type="CheckButton" parent="CanvasLayer/UI"]
 layout_mode = 0

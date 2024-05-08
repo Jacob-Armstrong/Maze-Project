@@ -18,10 +18,12 @@ const maze = preload("res://Maze.tscn")
 # "Nodes searched" label references
 @onready var nodeDisplay = $CanvasLayer/UI/NodeDisplay1
 @onready var nodeDisplay2 = $CanvasLayer/UI/NodeDisplay2
+@onready var nodeDisplay3 = $CanvasLayer/UI/NodeDisplay3
 
 # Maze references
 var currentMaze
 var secondMaze
+var thirdMaze
 
 # Default values
 var solveMethod = 0
@@ -38,6 +40,7 @@ func _ready():
 	Globals.disableSolveButtons.connect(disable_solve_buttons)
 	Globals.currentMazeSolved.connect(current_nodes_searched)
 	Globals.secondMazeSolved.connect(second_nodes_searched)
+	Globals.thirdMazeSolved.connect(third_nodes_searched)
 	Globals.showStepButton.connect(show_step_button)
 	Globals.appendStepLabel.connect(append_step_label)
 
@@ -85,14 +88,15 @@ func _on_solve_button_pressed():
 		1: # Breadth First Search
 			currentMaze.get_node("TileMap").solve_bfs()
 			solveType = "BFS"
-		2: # Compare both algorithms
+		2: # Better A*
+			currentMaze.get_node("TileMap").solve_better_astar(heuristic)
+			solveType = "BetterA*"
+		3: # Compare both algorithms
 			Globals.comparing = true
 			solveType = "A*"
 			currentMaze.get_node("TileMap").solve_astar(heuristic)
 			secondMaze.get_node("TileMap").solve_bfs()
-		3: # Better A*
-			currentMaze.get_node("TileMap").solve_better_astar(heuristic)
-			solveType = "BetterA*"
+			thirdMaze.get_node("TileMap").solve_better_astar(heuristic)
 
 func enable_solve_buttons():
 	solveButton.disabled = false
@@ -150,8 +154,18 @@ func _on_option_button_item_selected(index):
 			Globals.comparing = false
 			if is_instance_valid(secondMaze):
 				secondMaze.queue_free()
+			if is_instance_valid(thirdMaze):
+				thirdMaze.queue_free()
 		
-		2: # Compare both algorithms
+		2: # Better A*
+			currentMaze.get_node("TileMap").get_node("Label").visible = false
+			Globals.comparing = false
+			if is_instance_valid(secondMaze):
+				secondMaze.queue_free()
+			if is_instance_valid(thirdMaze):
+				thirdMaze.queue_free()
+		
+		3: # Compare both algorithms
 			show_heuristics()
 			Globals.comparing = true
 			
@@ -164,6 +178,14 @@ func _on_option_button_item_selected(index):
 			# Reposition second maze to the right
 			secondMaze.position += Vector2((currentMaze.get_node("TileMap").x_size+5)*64, 0)
 			
+			thirdMaze = currentMaze.duplicate()
+			thirdMaze.get_node("TileMap").isThirdMaze = true
+			thirdMaze.get_node("TileMap").path = currentMaze.get_node("TileMap").path
+			add_child(thirdMaze)
+			
+			# Reposition third maze to the right
+			thirdMaze.position += Vector2((currentMaze.get_node("TileMap").x_size+5)*32, (currentMaze.get_node("TileMap").y_size+5)*70)
+			
 			# Label mazes
 			var firstLabel = currentMaze.get_node("TileMap").get_node("Label")
 			firstLabel.text = "A*"
@@ -174,12 +196,12 @@ func _on_option_button_item_selected(index):
 			secondLabel.text = "BFS"
 			secondLabel.label_settings.font_size = Globals.grid_size_x * 20
 			secondLabel.visible = true
-		
-		3: # Better A*
-			currentMaze.get_node("TileMap").get_node("Label").visible = false
-			Globals.comparing = false
-			if is_instance_valid(secondMaze):
-				secondMaze.queue_free()
+			
+			var thirdLabel = thirdMaze.get_node("TileMap").get_node("Label")
+			thirdLabel.text = "Better A*"
+			thirdLabel.label_settings.font_size = Globals.grid_size_x * 5
+			thirdLabel.visible = true
+
 
 func _on_heuristic_option_button_item_selected(index):
 	match index:
@@ -199,6 +221,7 @@ func _on_heuristic_option_button_item_selected(index):
 func hide_displays():
 	nodeDisplay.visible = false
 	nodeDisplay2.visible = false
+	nodeDisplay3.visible = false
 
 func current_nodes_searched(nodes):
 	if solveType == "A*":
@@ -212,3 +235,7 @@ func current_nodes_searched(nodes):
 func second_nodes_searched(nodes):
 	nodeDisplay2.text = "BFS Nodes Searched: " + str(nodes)
 	nodeDisplay2.visible = true
+
+func third_nodes_searched(nodes):
+	nodeDisplay3.text = heuristic.capitalize() + " Better A* Nodes Searched: " + str(nodes)
+	nodeDisplay3.visible = true

@@ -31,6 +31,7 @@ var nodesSearched = 0
 
 # True if maze was duplicated for comparison
 var isSecondMaze
+var isThirdMaze
 
 # Array of cardinal directions
 var adjacent = [
@@ -45,7 +46,7 @@ func _ready():
 	y_size = Globals.grid_size_x
 	x_size = Globals.grid_size_y
 	
-	if not isSecondMaze:
+	if not isSecondMaze and not isThirdMaze:
 		create_global_border()
 		generate_maze()
 	else:
@@ -316,7 +317,6 @@ func solve_astar(heuristic):
 		path.append(current_node.position)
 		await get_tree().create_timer(Globals.delay).timeout
 	
-	# Maze solved
 	Globals.currentMazeSolved.emit(nodesSearched)
 	pathFound = true
 	retrace_path()
@@ -424,7 +424,10 @@ func solve_better_astar(heuristic):
 		await get_tree().create_timer(Globals.delay).timeout
 	
 	# Maze solved
-	Globals.currentMazeSolved.emit(nodesSearched)
+	if isThirdMaze:
+		Globals.thirdMazeSolved.emit(nodesSearched)
+	else:
+		Globals.currentMazeSolved.emit(nodesSearched)
 	pathFound = true
 	retrace_path()
 

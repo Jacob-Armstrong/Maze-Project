@@ -22,6 +22,7 @@ func adjust_camera():
 	
 	if Globals.comparing:
 		center_cell.x *= 2
+		center_cell.y *= 2
 	
 	self.global_position = maze.to_global(maze.map_to_local(center_cell))
 

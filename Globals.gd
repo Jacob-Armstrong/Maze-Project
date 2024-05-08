@@ -12,8 +12,9 @@ var comparing = false
 signal enableSolveButtons
 signal disableSolveButtons
 
-signal currentMazeSolved(time)
-signal secondMazeSolved(time)
+signal currentMazeSolved(nodes)
+signal secondMazeSolved(nodes)
+signal thirdMazeSolved(nodes)
 
 signal showStepButton
 signal appendStepLabel
