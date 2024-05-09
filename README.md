@@ -2,30 +2,31 @@
 
 DFS maze generator, A* maze solver & algorithm comparison tool.
 
-<img src="assets/Readme Images/maze_preview_1.png" width="500"/>
+<img src="assets/Readme Images/maze_preview_1.png" width="500"/><br/>
 
-## Features
+# Features
 
-* Watch maze generation in realtime
+
+### <ins> Watch maze generation in real time </ins>
 
 <img src="assets/Readme Images/maze_preview_2.png" width="100"> <br/>
 <img src="assets/Readme Images/maze_preview_2.gif" width="300">
 
-* Create mazes of all different sizes
+### <ins>Create mazes of all different sizes</ins>
 
 <img src="assets/Readme Images/maze_preview_3.png" width="150"> <br/>
 <img src="assets/Readme Images/maze_preview_3.gif" width="300">
 
-* Investigate A* decisions step by step
+### <ins>Investigate A* decisions step by step</ins>
 
 <img src="assets/Readme Images//maze_preview_4.png" width="200"> <br/>
 <img src="assets/Readme Images/maze_preview_4.gif" width="300">
 
-* Try different A* Heuristics
+### <ins>Try different A* Heuristics</ins>
 
 <img src="assets/Readme Images//maze_preview_5.png" width="300">
 
-* Compare A* and BFS in realtime
+### <ins>Compare the algorithms in real time</ins>
 
 <img src="assets/Readme Images/maze_preview_6.png" width="200"> <br/>
 <img src="assets/Readme Images/maze_preview_6.gif" width="300"> <br/>
