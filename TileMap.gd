@@ -26,7 +26,6 @@ var end_coords = Vector2i(Globals.grid_size_x-1, Globals.grid_size_y-1)
 
 # Info about tiles placed
 var path = []
-var pathFound = false
 var nodesSearched = 0
 
 # True if maze was duplicated for comparison
@@ -204,7 +203,7 @@ class Anode:
 	
 	# Debug to_string() override
 	func _to_string():
-		return "Position: " + str(position) + "\nf: " + str(f) + "\ng: " + str(g) + "\nh: " + str(h)
+		return "Position: " + str(position) + "\nf: " + str(snapped(f, 0.00001)) + "\ng: " + str(snapped(g, 0.00001)) + "\nh: " + str(snapped(h, 0.00001))
 
 # +------------------------------+
 # | Astar Maze Solving Algorithm |
@@ -297,6 +296,8 @@ func solve_astar(heuristic):
 			var optionNum = 1
 			var folder = Node2D.new()
 			add_child(folder)
+			
+			Globals.appendStepLabel.emit("A* Options:")
 				
 			for node in openList:
 				place_step_options(node.position)
@@ -318,7 +319,6 @@ func solve_astar(heuristic):
 		await get_tree().create_timer(Globals.delay).timeout
 	
 	Globals.currentMazeSolved.emit(nodesSearched)
-	pathFound = true
 	retrace_path()
 
 # +-------------------------------------+
@@ -403,6 +403,8 @@ func solve_better_astar(heuristic):
 			var optionNum = 1
 			var folder = Node2D.new()
 			add_child(folder)
+			
+			Globals.appendStepLabel.emit("Better A* Options:")
 				
 			for node in openList:
 				place_step_options(node.position)
@@ -428,7 +430,6 @@ func solve_better_astar(heuristic):
 		Globals.thirdMazeSolved.emit(nodesSearched)
 	else:
 		Globals.currentMazeSolved.emit(nodesSearched)
-	pathFound = true
 	retrace_path()
 
 # +--------------------------------------+
@@ -472,7 +473,6 @@ func solve_bfs():
 				nodesSearched += 1
 	
 	# Maze solved
-	pathFound = true
 	retrace_path()
 	
 	# Display # of nodes solved

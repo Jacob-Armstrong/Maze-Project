@@ -57,7 +57,9 @@ func _on_generate_maze_button_pressed():
 	disable_solve_buttons()
 	hide_displays()
 	show_heuristics()
-	stepButton.visible = false 
+	stepButton.visible = false
+	stepLabel.text = ""
+	Engine.time_scale = 1
 	
 	# Create a new maze and remove all others
 	var newMaze = maze.instantiate()
