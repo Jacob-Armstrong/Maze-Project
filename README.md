@@ -4,8 +4,17 @@ DFS maze generator, A* maze solver & algorithm comparison tool.
 
 <img src="assets/Readme Images/maze_preview_1.png" width="500"/><br/>
 
-# Features
+# Instructions
 
+### Running the program
+* Clone the repository to your pc
+* Run `MazeProject.exe` in the `Compiled Project` folder
+### Inspecting the code
+* To view the algorithms, open `TileMap.gd` in your IDE of choice (or on Github)
+* UI behavior code is located in `MainScene.gd`
+* Camera control code is located in `Camera2D.gd`
+
+# Features
 
 ### <ins> Watch maze generation in real time </ins>
 
