@@ -487,14 +487,12 @@ func solve_bfs():
 
 func retrace_path():
 	
-	# Initialize 2D Grid for Astar
 	var astargrid = AStarGrid2D.new()
 	astargrid.region = get_used_rect()
 	astargrid.cell_size = Vector2i(64, 64)
 	astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	astargrid.update()
 	
-	# Overlay maze walls onto Astar grid
 	var tiles = get_used_cells(LAYER)
 	for tile in tiles:
 		if isWall(tile):
