@@ -107,14 +107,13 @@ disabled = true
 text = "Solve"
 
 [node name="GenerateMazeButton" type="Button" parent="CanvasLayer/UI"]
-layout_mode = 2
+layout_mode = 1
 offset_left = 417.5
 offset_top = 17.0
 offset_right = 542.5
 offset_bottom = 57.0
 focus_mode = 0
-text = "Generate Maze
-"
+text = "Generate Maze"
 
 [node name="HeuristicLabel" type="Label" parent="CanvasLayer/UI"]
 visible = false
