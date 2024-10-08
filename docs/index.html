@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
     <title>Maze Project</title>
     <style>
+        /* Prevent scrolling and set height */
         html, body {
             height: 100%; /* Ensure body takes full height */
             margin: 0;
@@ -16,9 +17,16 @@
             align-items: center; /* Center vertically */
         }
 
-        #canvas {
+        /* Container for limiting size */
+        .container {
             width: 690px; /* Set fixed width */
             height: 690px; /* Set fixed height */
+            position: relative; /* Position relative for absolute children */
+        }
+
+        #canvas {
+            width: 100%; /* Set canvas to take full width of container */
+            height: 100%; /* Set canvas to take full height of container */
             display: block; /* Ensure canvas is a block element */
             image-rendering: pixelated; /* Prevent stretching */
         }
@@ -41,6 +49,7 @@
             justify-content: center;
             align-items: center;
             visibility: hidden;
+            z-index: 2; /* Make sure status overlay is on top */
         }
 
         #status-splash {
@@ -70,17 +79,7 @@
             overflow: hidden;
             padding: 1rem;
             text-align: center;
-            z-index: 1;
-        }
-
-        /* Container to limit size and center */
-        .container {
-            width: 690px; /* Set fixed width */
-            height: 690px; /* Set fixed height */
-            display: flex; /* Use flexbox for centering */
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            position: relative; /* Position relative for absolute children */
+            z-index: 3; /* Make sure notice is on top */
         }
     </style>
     <link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
@@ -92,17 +91,16 @@
         <canvas id="canvas">
             Your browser does not support the canvas tag.
         </canvas>
+        <div id="status">
+            <img id="status-splash" src="index.png" alt="">
+            <progress id="status-progress"></progress>
+            <div id="status-notice"></div>
+        </div>
     </div>
 
     <noscript>
         Your browser does not support JavaScript.
     </noscript>
-
-    <div id="status">
-        <img id="status-splash" src="index.png" alt="">
-        <progress id="status-progress"></progress>
-        <div id="status-notice"></div>
-    </div>
 
     <script src="index.js"></script>
     <script>
@@ -123,7 +121,7 @@
                     return;
                 }
                 if (mode === 'hidden') {
-                    statusOverlay.remove();
+                    statusOverlay.style.visibility = 'hidden'; // Hide instead of remove
                     initializing = false;
                     return;
                 }
