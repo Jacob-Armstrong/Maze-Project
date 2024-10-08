@@ -1,22 +1,23 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1715230285
-Camera2D.gd::GDScript::-1::1715199270::0::1::::<>Camera2D<>::
-Globals.gd::GDScript::-1::1715199767::0::1::::<>Node<>::
-icon.png::CompressedTexture2D::2139864059147427486::1713499183::1713499183::1::::<><>::
-LabelPreset.tscn::PackedScene::4556354320985985951::1715229959::0::1::::<><>::
-MainScene.gd::GDScript::-1::1715215758::0::1::::<>Node2D<>::
-MainScene.tscn::PackedScene::6668361744196246857::1715229959::0::1::::<><>::res://MainScene.gd<>res://Camera2D.gd
-Maze.tscn::PackedScene::9160869112960716091::1715230285::0::1::::<><>::uid://dfhxjm0boys4v::::res://assets/full_atlas.png<>res://TileMap.gd
-README.md::TextFile::-1::1715238261::0::1::::<><>::
-TileMap.gd::GDScript::-1::1715230285::0::1::::<>TileMap<>::
-::res://assets/::1714624654
-full_atlas.png::CompressedTexture2D::7526070145492077623::1714420672::1714420685::1::::<><>::
-simple_atlas.png::CompressedTexture2D::6865311040763202253::1713499183::1713499183::1::::<><>::
-simple_maze_atlas.png::CompressedTexture2D::8360727020412668114::1713935033::1713935033::1::::<><>::
-::res://assets/Readme Images/::1715238257
-maze_preview_1.png::CompressedTexture2D::1061215051704390178::1715237404::1715238717::1::::<><>::
-maze_preview_2.png::CompressedTexture2D::6232294131452976087::1714624654::1714624690::1::::<><>::
-maze_preview_3.png::CompressedTexture2D::1091201999687560602::1714624654::1714624690::1::::<><>::
-maze_preview_4.png::CompressedTexture2D::8692257828137453844::1714624654::1714624690::1::::<><>::
-maze_preview_5.png::CompressedTexture2D::8756742933408270956::1714624654::1714624690::1::::<><>::
-maze_preview_6.png::CompressedTexture2D::4624492962791401174::1715237497::1715238717::1::::<><>::
+::res://::1728347034
+Camera2D.gd::GDScript::-1::1728346967::0::1::::<>Camera2D<>::
+Globals.gd::GDScript::-1::1728346967::0::1::::<>Node<>::
+icon.png::CompressedTexture2D::2139864059147427486::1728346967::1728347035::1::::<><>::
+LabelPreset.tscn::PackedScene::4556354320985985951::1728346967::0::1::::<><>::
+MainScene.gd::GDScript::-1::1728346967::0::1::::<>Node2D<>::
+MainScene.tscn::PackedScene::6668361744196246857::1728346967::0::1::::<><>::res://MainScene.gd<>res://Camera2D.gd
+Maze.tscn::PackedScene::9160869112960716091::1728346967::0::1::::<><>::uid://dfhxjm0boys4v::::res://assets/full_atlas.png<>res://TileMap.gd
+README.md::TextFile::-1::1728346967::0::1::::<><>::
+TileMap.gd::GDScript::-1::1728346967::0::1::::<>TileMap<>::
+::res://assets/::1728346967
+full_atlas.png::CompressedTexture2D::7526070145492077623::1728346967::1728347035::1::::<><>::
+simple_atlas.png::CompressedTexture2D::6865311040763202253::1728346967::1728347035::1::::<><>::
+simple_maze_atlas.png::CompressedTexture2D::8360727020412668114::1728346967::1728347035::1::::<><>::
+::res://assets/Readme Images/::1728346967
+maze_preview_1.png::CompressedTexture2D::1061215051704390178::1728346967::1728347035::1::::<><>::
+maze_preview_2.png::CompressedTexture2D::6232294131452976087::1728346967::1728347035::1::::<><>::
+maze_preview_3.png::CompressedTexture2D::1091201999687560602::1728346967::1728347035::1::::<><>::
+maze_preview_4.png::CompressedTexture2D::8692257828137453844::1728346967::1728347035::1::::<><>::
+maze_preview_5.png::CompressedTexture2D::8756742933408270956::1728346967::1728347035::1::::<><>::
+maze_preview_6.png::CompressedTexture2D::4624492962791401174::1728346967::1728347035::1::::<><>::
+::res://Compiled Project/::1717037104
