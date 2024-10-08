@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://c2ag7c45jmv1r"]
+[gd_scene load_steps=5 format=3 uid="uid://c2ag7c45jmv1r"]
 
 [ext_resource type="Script" path="res://MainScene.gd" id="1_jlnit"]
-[ext_resource type="Script" path="res://ui.gd" id="2_jyg3q"]
 [ext_resource type="Script" path="res://Camera2D.gd" id="3_hsjw3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fb38"]
@@ -20,7 +19,6 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = ExtResource("2_jyg3q")
 
 [node name="ColorRect2" type="ColorRect" parent="CanvasLayer/UI"]
 layout_mode = 0
