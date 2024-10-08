@@ -1,6 +1,7 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1728347034
+::res://::1728347299
 Camera2D.gd::GDScript::-1::1728346967::0::1::::<>Camera2D<>::
+export_presets.cfg::TextFile::-1::1728347177::0::1::::<><>::
 Globals.gd::GDScript::-1::1728346967::0::1::::<>Node<>::
 icon.png::CompressedTexture2D::2139864059147427486::1728346967::1728347035::1::::<><>::
 LabelPreset.tscn::PackedScene::4556354320985985951::1728346967::0::1::::<><>::
@@ -9,11 +10,11 @@ MainScene.tscn::PackedScene::6668361744196246857::1728346967::0::1::::<><>::res:
 Maze.tscn::PackedScene::9160869112960716091::1728346967::0::1::::<><>::uid://dfhxjm0boys4v::::res://assets/full_atlas.png<>res://TileMap.gd
 README.md::TextFile::-1::1728346967::0::1::::<><>::
 TileMap.gd::GDScript::-1::1728346967::0::1::::<>TileMap<>::
-::res://assets/::1728346967
+::res://assets/::1728347035
 full_atlas.png::CompressedTexture2D::7526070145492077623::1728346967::1728347035::1::::<><>::
 simple_atlas.png::CompressedTexture2D::6865311040763202253::1728346967::1728347035::1::::<><>::
 simple_maze_atlas.png::CompressedTexture2D::8360727020412668114::1728346967::1728347035::1::::<><>::
-::res://assets/Readme Images/::1728346967
+::res://assets/Readme Images/::1728347035
 maze_preview_1.png::CompressedTexture2D::1061215051704390178::1728346967::1728347035::1::::<><>::
 maze_preview_2.png::CompressedTexture2D::6232294131452976087::1728346967::1728347035::1::::<><>::
 maze_preview_3.png::CompressedTexture2D::1091201999687560602::1728346967::1728347035::1::::<><>::
@@ -21,3 +22,7 @@ maze_preview_4.png::CompressedTexture2D::8692257828137453844::1728346967::172834
 maze_preview_5.png::CompressedTexture2D::8756742933408270956::1728346967::1728347035::1::::<><>::
 maze_preview_6.png::CompressedTexture2D::4624492962791401174::1728346967::1728347035::1::::<><>::
 ::res://Compiled Project/::1717037104
+::res://docs/::1728347298
+index.apple-touch-icon.png::CompressedTexture2D::6805218251508000224::1728347298::1728347394::1::::<><>::
+index.icon.png::CompressedTexture2D::5566158736001090416::1728347298::1728347394::1::::<><>::
+index.png::CompressedTexture2D::6986574238859103233::1728347298::1728347394::1::::<><>::

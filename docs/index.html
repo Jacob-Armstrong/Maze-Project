@@ -16,10 +16,17 @@ body {
 	background-color: black;
 	overflow: hidden;
 	touch-action: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
 }
 
 #canvas {
 	display: block;
+	width: 100%;
+	max-width: 90vmin; /* Use vmin to maintain square aspect ratio */
+	aspect-ratio: 1 / 1; /* Keep the canvas a square */
 }
 
 #canvas:focus {
@@ -77,8 +84,8 @@ body {
 }
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
-<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
-<script src="coi-serviceworker.js"></script>
+		<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+		<script src="coi-serviceworker.js"></script>
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -142,7 +149,7 @@ const engine = new Engine(GODOT_CONFIG);
 		} else if (typeof err === 'string') {
 			setStatusNotice(err);
 		} else {
-			setStatusNotice('An unknown error occured');
+			setStatusNotice('An unknown error occurred');
 		}
 		setStatusMode('notice');
 		initializing = false;
@@ -196,4 +203,3 @@ const engine = new Engine(GODOT_CONFIG);
 		</script>
 	</body>
 </html>
-
