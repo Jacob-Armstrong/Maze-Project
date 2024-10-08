@@ -16,9 +16,13 @@ script = ExtResource("1_jlnit")
 
 [node name="UI" type="Control" parent="CanvasLayer"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
 offset_bottom = 40.0
+grow_horizontal = 2
 
 [node name="ColorRect2" type="ColorRect" parent="CanvasLayer/UI"]
 layout_mode = 0
