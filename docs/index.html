@@ -72,15 +72,27 @@
             text-align: center;
             z-index: 1;
         }
+
+        /* Container to limit size and center */
+        .container {
+            width: 690px; /* Set fixed width */
+            height: 690px; /* Set fixed height */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            position: relative; /* Position relative for absolute children */
+        }
     </style>
     <link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
     <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
     <script src="coi-serviceworker.js"></script>
 </head>
 <body>
-    <canvas id="canvas">
-        Your browser does not support the canvas tag.
-    </canvas>
+    <div class="container">
+        <canvas id="canvas">
+            Your browser does not support the canvas tag.
+        </canvas>
+    </div>
 
     <noscript>
         Your browser does not support JavaScript.
